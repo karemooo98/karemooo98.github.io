@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head><title>Employee Device Submission</title></head>
+<body>
+  <h2>Submit Your Device Setup</h2>
+
+  <label>Employee:</label>
+  <select id="employeeSelect"></select><br><br>
+
+  <label>Device Type:</label>
+  <input id="deviceType" placeholder="e.g. A920" /><br><br>
+
+  <label>Device Count:</label>
+  <input id="deviceCount" type="number" /><br><br>
+
+  <label>Faulty Devices:</label>
+  <input id="faultyDevices" type="number" /><br><br>
+
+  <label>Serial Numbers (comma separated):</label><br>
+  <textarea id="serialNumbers"></textarea><br><br>
+
+  <label>Notes (optional):</label><br>
+  <textarea id="notes"></textarea><br><br>
+
+  <button onclick="submitData()">Submit</button>
+
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    const empSelect = document.getElementById("employeeSelect");
+
+    function loadEmployees() {
+      db.collection("employees").get().then(snapshot => {
+        snapshot.forEach(doc => {
+          const emp = doc.data();
+          const opt = document.createElement("option");
+          opt.value = JSON.stringify({ name: emp.name, id: emp.id });
+          opt.textContent = `${emp.name} (${emp.id})`;
+          empSelect.appendChild(opt);
+        });
+      });
+    }
+
+    function submitData() {
+      const empData = JSON.parse(empSelect.value);
+      const deviceType = document.getElementById("deviceType").value;
+      const deviceCount = parseInt(document.getElementById("deviceCount").value);
+      const faultyDevices = parseInt(document.getElementById("faultyDevices").value);
+      const serialNumbers = document.getElementById("serialNumbers").value.split(",").map(s => s.trim());
+      const notes = document.getElementById("notes").value;
+
+      db.collection("deviceSubmissions").add({
+        employeeName: empData.name,
+        employeeId: empData.id,
+        deviceType,
+        deviceCount,
+        faultyDevices,
+        serialNumbers,
+        notes,
+        date: new Date().toISOString().split("T")[0],
+        timestamp: new Date()
+      }).then(() => {
+        alert("Submission successful");
+      });
+    }
+
+    loadEmployees();
+  </script>
+</body>
+</html>

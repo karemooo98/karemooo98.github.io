@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home - POS Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #e8ebf7;
+    }
+    nav {
+      background: #3f51b5;
+      padding: 15px 30px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    nav .links a:hover {
+      text-decoration: underline;
+    }
+    main {
+      padding: 30px;
+      text-align: center;
+    }
+    button.logout-btn {
+      background: #f44336;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button.logout-btn:hover {
+      background: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div>POS Device Tracker</div>
+    <div class="links">
+      <a href="admin.html">Admin Panel</a>
+      <a href="employee.html">Employee Submission</a>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <main>
+    <h1>Welcome to POS Device Tracker</h1>
+    <p>Use the navigation links above to go to Admin or Employee pages.</p>
+  </main>
+
+  <script>
+    if(localStorage.getItem("isAdmin") !== "true") {
+      alert("Please login first");
+      window.location.href = "login.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("isAdmin");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

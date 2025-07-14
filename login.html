@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>تسجيل الدخول</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #eef1f8; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      height: 100vh; 
+      margin: 0; 
+      direction: rtl;
+      text-align: right;
+    }
+    #loginBox { 
+      background: white; 
+      padding: 30px; 
+      border-radius: 10px; 
+      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+      width: 320px; 
+    }
+    input { 
+      width: 100%; 
+      padding: 12px; 
+      margin: 10px 0; 
+      font-size: 16px; 
+      border-radius: 5px; 
+      border: 1px solid #ccc; 
+      text-align: right;
+    }
+    button { 
+      width: 100%; 
+      padding: 12px; 
+      background: #3f51b5; 
+      color: white; 
+      font-weight: bold; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+      font-size: 16px;
+    }
+    .error { 
+      color: red; 
+      font-size: 14px; 
+      margin-top: 10px;
+      min-height: 20px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #3f51b5;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="loginBox">
+    <h2>تسجيل الدخول</h2>
+    <input type="text" id="userId" placeholder="اسم المستخدم" autocomplete="off" />
+    <input type="password" id="password" placeholder="كلمة المرور" autocomplete="off" />
+    <button onclick="login()">دخول</button>
+    <div id="error" class="error"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script>
+    // ضع هنا إعدادات Firebase الخاصة بك
+    const firebaseConfig = {
+     apiKey: "AIzaSyD5NdcVxl1m77m4PBGaU9PL3jqvLtfJL9I",
+     authDomain: "pos-web-3ca21.firebaseapp.com",
+     projectId: "pos-web-3ca21",
+     storageBucket: "pos-web-3ca21.firebasestorage.app",
+     messagingSenderId: "163092162625",
+     appId: "1:163092162625:web:eeef79875a66d327de3ec0",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function login() {
+      const userId = document.getElementById("userId").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorDiv = document.getElementById("error");
+      errorDiv.textContent = "";
+
+      if (!userId || !password) {
+        errorDiv.textContent = "يرجى إدخال اسم المستخدم وكلمة المرور.";
+        return;
+      }
+
+      db.collection("employees").where("id", "==", userId).limit(1).get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            errorDiv.textContent = "المستخدم غير موجود.";
+            return;
+          }
+          const userDoc = snapshot.docs[0];
+          const userData = userDoc.data();
+
+          if (userData.password !== password) {
+            errorDiv.textContent = "كلمة المرور غير صحيحة.";
+            return;
+          }
+
+          // تخزين بيانات المستخدم في التخزين المحلي
+          localStorage.setItem("employeeId", userData.id);
+          localStorage.setItem("employeeName", userData.name);
+          localStorage.setItem("role", userData.role);
+
+          // التوجيه حسب الدور
+          if (userData.role === "admin") {
+            window.location.href = "admin.html";
+          } else {
+            window.location.href = "employee.html";
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          errorDiv.textContent = "حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.";
+        });
+    }
+  </script>
+</body>
+</html>

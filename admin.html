@@ -2,129 +2,693 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>لوحة تحكم المدير</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
+    :root {
+      --primary: #3b82f6;
+      --gray-light: #334155;
+      --primary-light: #1e40af;
+      --secondary: #0ea5e9;
+      --accent: #f97316;
+      --dark: #f8fafc;
+      --light: #0f172a;
+      --gray: #94a3b8;
+      --gray-light: #334155;
+      --gray-dark: #1e293b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --card-bg: #1e293b;
+      --header-bg: #0f172a;
+      --input-bg: #334155;
+      --border-radius: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.6);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      background: #f4f4f4; 
-      margin: 0; 
+      font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; 
+      background: var(--light); 
+      color: var(--dark);
       direction: rtl;
       text-align: right;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      grid-template-rows: auto 1fr;
+      grid-template-areas: 
+        "sidebar header"
+        "sidebar main";
     }
-    nav { 
-      background: #3f51b5; 
-      color: white; 
-      padding: 15px 30px; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
+    
+    /* Header Styles */
+    header {
+      grid-area: header;
+      background: var(--header-bg);
+      padding: 16px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
     }
-    nav button { 
-      background: none; 
-      border: none; 
-      color: white; 
-      font-weight: bold; 
-      cursor: pointer; 
-      font-size: 16px;
+    
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--dark);
     }
-    main { 
-      max-width: 900px; 
-      margin: 20px auto; 
-      background: white; 
-      padding: 30px; 
-      border-radius: 10px; 
-      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    input, select, button, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-      font-family: inherit;
-      text-align: right;
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
     }
-    button {
-      background: #3f51b5; 
-      color: white; 
-      border: none; 
-      border-radius: 8px; 
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
+    
+    .user-name {
+      font-weight: 500;
     }
-    button:hover {
-      background: #303f9f;
-    }
-    h2 {
-      margin-bottom: 20px;
-      font-weight: bold;
-      color: #3f51b5;
-      text-align: right;
-    }
-    table { 
-      width: 100%; 
-      border-collapse: collapse; 
-      margin-top: 20px; 
-    }
-    th, td { 
-      border: 1px solid #ccc; 
-      padding: 10px; 
-      text-align: right; 
-      font-size: 14px;
-    }
-    th { 
-      background: #f1f1f1; 
-    }
-    .serial-button {
-      background-color: #1976d2;
+    
+    /* Sidebar Styles */
+    .sidebar {
+      grid-area: sidebar;
+      background: var(--primary-dark);
       color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
+      padding: 30px 0;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-md);
+      z-index: 20;
     }
-    .serial-button:hover {
-      background-color: #115293;
+    
+    .logo {
+      padding: 0 24px 24px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 24px;
+    }
+    
+    .nav-item {
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    
+    .nav-item i {
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .logout-btn {
+      margin-top: auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255,255,255,0.8);
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: right;
+    }
+    
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    
+    /* Main Content Styles */
+    main {
+      grid-area: main;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    
+    .stat-card-title {
+      color: var(--gray);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .stat-card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    
+    .stat-card-icon {
+      margin-top: auto;
+      align-self: flex-end;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    
+    .stat-card.primary .stat-card-icon {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    
+    .stat-card.success .stat-card-icon {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    .stat-card.warning .stat-card-icon {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+    
+    .card-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--gray-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    
+    .card-body {
+      padding: 24px;
+    }
+    
+    /* Form Styles */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      border: 1px solid var(--gray-light);
+      background: var(--input-bg);
+      color: var(--dark);
+      transition: var(--transition);
+      font-family: inherit;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: var(--border-radius);
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 8px rgba(37, 99, 235, 0.3);
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.875rem;
+    }
+    
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      border-radius: var(--border-radius);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    
+    thead {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+    
+    th {
+      font-weight: 600;
+      text-align: right;
+    }
+    
+    th, td {
+      padding: 16px;
+      border-bottom: 1px solid var(--gray-light);
+    }
+    
+    tbody tr:hover {
+      background: rgba(226, 232, 240, 0.3);
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-primary {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+    
+    .badge-success {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+    
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-20px);
+      transition: var(--transition);
+    }
+    
+    .modal.active .modal-content {
+      transform: translateY(0);
+    }
+    
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--gray-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+      transition: var(--transition);
+    }
+    
+    .modal-close:hover {
+      color: var(--danger);
+    }
+    
+    .modal-body {
+      padding: 24px;
+    }
+    
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--gray-light);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      body {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+          "header"
+          "main";
+      }
+      
+      .sidebar {
+        position: fixed;
+        top: 0;
+        right: -240px;
+        height: 100vh;
+        transition: var(--transition);
+      }
+      
+      .sidebar.active {
+        right: 0;
+      }
+      
+      .menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--dark);
+        cursor: pointer;
+      }
+    }
+    
+    @media (min-width: 993px) {
+      .menu-toggle {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
-  <nav>
-    <div>المدير: <span id="adminName"></span></div>
-    <button onclick="logout()">تسجيل خروج</button>
-  </nav>
-
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <i class="fas fa-chart-line"></i>
+      <span>لوحة التحكم</span>
+    </div>
+    
+    <div class="nav-item active">
+      <i class="fas fa-home"></i>
+      <span>الرئيسية</span>
+    </div>
+    
+    <div class="nav-item">
+      <i class="fas fa-users"></i>
+      <span>الموظفين</span>
+    </div>
+    
+    <div class="nav-item">
+      <i class="fas fa-mobile-alt"></i>
+      <span>الأجهزة</span>
+    </div>
+    
+    <div class="nav-item">
+      <i class="fas fa-chart-bar"></i>
+      <span>التقارير</span>
+    </div>
+    
+    <div class="nav-item">
+      <i class="fas fa-cog"></i>
+      <span>الإعدادات</span>
+    </div>
+    
+    <button class="logout-btn" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>تسجيل الخروج</span>
+    </button>
+  </aside>
+  
+  <!-- Header -->
+  <header>
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="header-title">لوحة تحكم المدير</div>
+    
+    <div class="user-info">
+      <div class="user-name" id="adminName">المدير</div>
+      <div class="user-avatar" id="userAvatar">م</div>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
   <main>
-    <h2>إضافة موظف أو مدير</h2>
-    <input type="text" id="empName" placeholder="الاسم الكامل" />
-    <input type="text" id="empId" placeholder="اسم المستخدم" />
-    <input type="password" id="empPass" placeholder="كلمة المرور" />
-    <select id="empRole">
-      <option value="employee">موظف</option>
-      <option value="admin">مدير</option>
-    </select>
-    <button onclick="addEmployee()">إضافة مستخدم</button>
-
-    <h2>قائمة الموظفين</h2>
-    <div id="employeesList">جار التحميل...</div>
-
-    <h2>عرض تسجيلات الموظفين</h2>
-    <select id="employeeSelect" onchange="loadEmployeeSubmissions()">
-      <option value="">-- اختر موظف --</option>
-    </select>
-
-    <div id="employeeSubmissions" style="margin-top:20px;">اختر موظفًا لعرض تسجيلاته.</div>
+    <!-- Dashboard Stats -->
+    <div class="dashboard-grid">
+      <div class="stat-card primary">
+        <div class="stat-card-title">إجمالي الموظفين</div>
+        <div class="stat-card-value" id="totalEmployees">0</div>
+        <div class="stat-card-icon">
+          <i class="fas fa-users"></i>
+        </div>
+      </div>
+      
+      <div class="stat-card success">
+        <div class="stat-card-title">إجمالي الأجهزة</div>
+        <div class="stat-card-value" id="totalDevices">0</div>
+        <div class="stat-card-icon">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+      </div>
+      
+      <div class="stat-card warning">
+        <div class="stat-card-title">الأجهزة المعطوبة</div>
+        <div class="stat-card-value" id="totalFaulty">0</div>
+        <div class="stat-card-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Add Employee Card -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">إضافة موظف جديد</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">الاسم الكامل</label>
+            <input type="text" id="empName" class="form-control" placeholder="أدخل الاسم الكامل" />
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">اسم المستخدم</label>
+            <input type="text" id="empId" class="form-control" placeholder="أدخل اسم المستخدم" />
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">كلمة المرور</label>
+            <input type="password" id="empPass" class="form-control" placeholder="أدخل كلمة المرور" />
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">الدور</label>
+            <select id="empRole" class="form-control">
+              <option value="employee">موظف</option>
+              <option value="admin">مدير</option>
+            </select>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="addEmployee()">
+          <i class="fas fa-plus"></i>
+          <span>إضافة مستخدم</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Employees List Card -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">قائمة الموظفين</h2>
+      </div>
+      <div class="card-body">
+        <div class="table-container" id="employeesList">
+          جار التحميل...
+        </div>
+      </div>
+    </div>
+    
+    <!-- Serial Number Search Card -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">البحث عن رقم سيريال</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">رقم السيريال</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="serialSearch" class="form-control" placeholder="أدخل رقم السيريال للبحث" />
+            <button class="btn btn-primary" onclick="searchBySerial()">
+              <i class="fas fa-search"></i>
+              <span>بحث</span>
+            </button>
+          </div>
+        </div>
+        
+        <div id="serialSearchResults" class="mt-4">
+          أدخل رقم سيريال للبحث عن الموظف الذي قام بتسجيله.
+        </div>
+      </div>
+    </div>
+    
+    <!-- Employee Submissions Card -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">تسجيلات الموظفين</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">اختر موظف</label>
+          <select id="employeeSelect" class="form-control" onchange="loadEmployeeSubmissions()">
+            <option value="">-- اختر موظف --</option>
+          </select>
+        </div>
+        
+        <div id="employeeSubmissions" class="mt-4">
+          اختر موظفًا لعرض تسجيلاته.
+        </div>
+      </div>
+    </div>
   </main>
+  
+  <!-- Serial Numbers Modal -->
+  <div class="modal" id="serialModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">أرقام السيريال</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="serialModalBody">
+        <!-- Serial numbers will be displayed here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal()">إغلاق</button>
+      </div>
+    </div>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script>
+    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyD5NdcVxl1m77m4PBGaU9PL3jqvLtfJL9I",
       authDomain: "pos-web-3ca21.firebaseapp.com",
@@ -136,6 +700,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Authentication Check
     const role = localStorage.getItem("role");
     const adminName = localStorage.getItem("employeeName");
     if (role !== "admin") {
@@ -143,12 +708,20 @@
       window.location.href = "login.html";
     }
     document.getElementById("adminName").textContent = adminName || "المدير";
+    document.getElementById("userAvatar").textContent = adminName ? adminName.charAt(0) : "م";
 
+    // Mobile Menu Toggle
+    document.getElementById("menuToggle").addEventListener("click", function() {
+      document.getElementById("sidebar").classList.toggle("active");
+    });
+
+    // Logout Function
     function logout() {
       localStorage.clear();
       window.location.href = "login.html";
     }
 
+    // Add Employee Function
     function addEmployee() {
       const name = document.getElementById("empName").value.trim();
       const id = document.getElementById("empId").value.trim();
@@ -172,12 +745,14 @@
         document.getElementById("empId").value = "";
         document.getElementById("empPass").value = "";
         loadEmployees();
+        updateDashboardStats();
       })
       .catch(err => {
         alert("حدث خطأ أثناء الإضافة: " + err.message);
       });
     }
 
+    // Load Employees Function
     function loadEmployees() {
       db.collection("employees").where("role", "==", "employee").get()
         .then(snapshot => {
@@ -188,15 +763,29 @@
             document.getElementById("employeesList").textContent = "لا يوجد موظفين.";
             return;
           }
+          
           let html = `<table>
-            <thead><tr><th>اسم المستخدم</th><th>الاسم</th><th>الدور</th><th>حذف</th></tr></thead><tbody>`;
+            <thead>
+              <tr>
+                <th>اسم المستخدم</th>
+                <th>الاسم</th>
+                <th>الدور</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>`;
+            
           snapshot.forEach(doc => {
             const d = doc.data();
             html += `<tr>
               <td>${d.id}</td>
               <td>${d.name}</td>
-              <td>${d.role === "admin" ? "مدير" : "موظف"}</td>
-              <td><button onclick="deleteEmployee('${d.id}')">حذف</button></td>
+              <td><span class="badge badge-${d.role === 'admin' ? 'primary' : 'success'}">${d.role === "admin" ? "مدير" : "موظف"}</span></td>
+              <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${d.id}')">
+                  <i class="fas fa-trash"></i> حذف
+                </button>
+              </td>
             </tr>`;
 
             const option = document.createElement("option");
@@ -204,21 +793,26 @@
             option.textContent = `${d.name} (${d.id})`;
             select.appendChild(option);
           });
+          
           html += `</tbody></table>`;
           document.getElementById("employeesList").innerHTML = html;
         });
     }
 
+    // Delete Employee Function
     function deleteEmployee(empId) {
       if (!confirm("هل أنت متأكد من حذف المستخدم " + empId + "؟")) return;
+      
       db.collection("employees").doc(empId).delete()
         .then(() => {
           alert("تم حذف المستخدم.");
           loadEmployees();
           document.getElementById("employeeSubmissions").textContent = "اختر موظفًا لعرض تسجيلاته.";
+          updateDashboardStats();
         });
     }
 
+    // Load Employee Submissions Function
     function loadEmployeeSubmissions() {
       const empId = document.getElementById("employeeSelect").value;
       if (!empId) {
@@ -239,15 +833,19 @@
           let totalDevices = 0;
           let totalFaulty = 0;
 
-          let html = `<table>
-            <thead><tr>
-              <th>التاريخ</th>
-              <th>نوع الجهاز</th>
-              <th>العدد</th>
-              <th>أرقام السيريال</th>
-              <th>الأجهزة المعطوبة</th>
-              <th>ملاحظات</th>
-            </tr></thead><tbody>`;
+          let html = `<div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>التاريخ</th>
+                  <th>نوع الجهاز</th>
+                  <th>العدد</th>
+                  <th>أرقام السيريال</th>
+                  <th>الأجهزة المعطوبة</th>
+                  <th>ملاحظات</th>
+                </tr>
+              </thead>
+              <tbody>`;
 
           snapshot.forEach(doc => {
             const d = doc.data();
@@ -263,29 +861,30 @@
               <td>${date}</td>
               <td>${d.deviceType || "-"}</td>
               <td>${deviceCount}</td>
-              <td><button class="serial-button" data-serials="${encodeURIComponent(serials)}">عرض</button></td>
+              <td>
+                <button class="btn btn-primary btn-sm" onclick="showSerials('${encodeURIComponent(serials)}')">
+                  <i class="fas fa-eye"></i> عرض
+                </button>
+              </td>
               <td>${faultyCount}</td>
               <td>${d.notes || "-"}</td>
             </tr>`;
           });
 
-          html += `<tr style="font-weight:bold; background:#f9f9f9;">
-            <td colspan="2">الإجمالي</td>
-            <td>${totalDevices}</td>
-            <td></td>
-            <td>${totalFaulty}</td>
-            <td></td>
-          </tr>`;
+          html += `</tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2">الإجمالي</td>
+                <td>${totalDevices}</td>
+                <td></td>
+                <td>${totalFaulty}</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+          </div>`;
 
-          html += "</tbody></table>";
           document.getElementById("employeeSubmissions").innerHTML = html;
-
-          document.querySelectorAll(".serial-button").forEach(btn => {
-            btn.addEventListener("click", () => {
-              const serialsDecoded = decodeURIComponent(btn.getAttribute("data-serials"));
-              showSerials(serialsDecoded);
-            });
-          });
         })
         .catch(err => {
           console.error(err);
@@ -293,36 +892,136 @@
         });
     }
 
-    function showSerials(serials) {
-      const modal = document.createElement("div");
-      modal.id = "serialModal";
-      modal.style.position = "fixed";
-      modal.style.top = "0";
-      modal.style.left = "0";
-      modal.style.width = "100%";
-      modal.style.height = "100%";
-      modal.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
-      modal.style.display = "flex";
-      modal.style.justifyContent = "center";
-      modal.style.alignItems = "center";
-      modal.style.zIndex = "9999";
-
-      const formattedSerials = serials.split(",").map(s => s.trim()).join("<br>");
-
-      modal.innerHTML = `
-        <div style="background:white; padding:20px; border-radius:10px; max-width:500px; max-height:80%; overflow:auto; direction: rtl; text-align: right;">
-          <h3>أرقام السيريال</h3>
-          <div style="font-family: monospace; line-height: 1.5;">${formattedSerials || "-"}</div>
-          <br>
-          <button onclick="document.body.removeChild(document.getElementById('serialModal'))"
-            style="margin-top:10px; padding:8px 16px; font-weight:bold; border-radius: 6px; border:none; background:#3f51b5; color:white; cursor:pointer;">إغلاق</button>
-        </div>
-      `;
-
-      document.body.appendChild(modal);
+    // Show Serial Numbers Function
+    function showSerials(serialsEncoded) {
+      const serials = decodeURIComponent(serialsEncoded);
+      const formattedSerials = serials.split(",").map((s, i) => `<div>${i+1}. ${s.trim()}</div>`).join("");
+      
+      document.getElementById("serialModalBody").innerHTML = formattedSerials || "-";
+      document.getElementById("serialModal").classList.add("active");
     }
 
-    window.onload = loadEmployees;
+    // Close Modal Function
+    function closeModal() {
+      document.getElementById("serialModal").classList.remove("active");
+    }
+
+    // Update Dashboard Stats
+    function updateDashboardStats() {
+      // Count employees
+      db.collection("employees").where("role", "==", "employee").get()
+        .then(snapshot => {
+          document.getElementById("totalEmployees").textContent = snapshot.size;
+        });
+      
+      // Count devices and faulty devices
+      db.collection("device_submissions").get()
+        .then(snapshot => {
+          let totalDevices = 0;
+          let totalFaulty = 0;
+          
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            totalDevices += data.deviceCount || 0;
+            totalFaulty += data.faultyCount || 0;
+          });
+          
+          document.getElementById("totalDevices").textContent = totalDevices;
+          document.getElementById("totalFaulty").textContent = totalFaulty;
+        });
+    }
+
+    // Search by Serial Number Function
+    function searchBySerial() {
+      const serialNumber = document.getElementById("serialSearch").value.trim();
+      if (!serialNumber) {
+        document.getElementById("serialSearchResults").innerHTML = "الرجاء إدخال رقم سيريال للبحث.";
+        return;
+      }
+      
+      document.getElementById("serialSearchResults").innerHTML = "جاري البحث...";
+      
+      db.collection("device_submissions")
+        .get()
+        .then(snapshot => {
+          let found = false;
+          let results = [];
+          
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const serials = data.serialNumbers || "";
+            
+            // تحقق مما إذا كان رقم السيريال موجودًا في قائمة الأرقام
+            if (serials.includes(serialNumber)) {
+              found = true;
+              const date = data.date && data.date.toDate ? data.date.toDate().toLocaleString('ar-EG') : "غير متوفر";
+              
+              results.push({
+                employeeId: data.employeeId,
+                employeeName: data.employeeName,
+                date: date,
+                deviceType: data.deviceType,
+                serialNumbers: data.serialNumbers
+              });
+            }
+          });
+          
+          if (!found) {
+            document.getElementById("serialSearchResults").innerHTML = "لم يتم العثور على رقم السيريال.";
+            return;
+          }
+          
+          let html = `<div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>رقم الموظف</th>
+                  <th>اسم الموظف</th>
+                  <th>نوع الجهاز</th>
+                  <th>التاريخ</th>
+                  <th>أرقام السيريال</th>
+                </tr>
+              </thead>
+              <tbody>`;
+          
+          results.forEach(result => {
+            html += `<tr>
+              <td>${result.employeeId}</td>
+              <td>${result.employeeName}</td>
+              <td>${result.deviceType || "-"}</td>
+              <td>${result.date}</td>
+              <td>
+                <button class="btn btn-primary btn-sm" onclick="showSerials('${encodeURIComponent(result.serialNumbers)}')">
+                  <i class="fas fa-eye"></i> عرض
+                </button>
+              </td>
+            </tr>`;
+          });
+          
+          html += `</tbody></table></div>`;
+          document.getElementById("serialSearchResults").innerHTML = html;
+        })
+        .catch(err => {
+          console.error("خطأ في البحث:", err);
+          document.getElementById("serialSearchResults").innerHTML = "حدث خطأ أثناء البحث.";
+        });
+    }
+
+    // Initialize
+    window.onload = function() {
+      loadEmployees();
+      updateDashboardStats();
+      
+      // Add event listener for Enter key on serial search input
+      const serialSearchInput = document.getElementById("serialSearch");
+      if (serialSearchInput) {
+        serialSearchInput.addEventListener("keyup", function(event) {
+          if (event.key === "Enter") {
+            searchBySerial();
+          }
+        });
+      }
+    };
   </script>
 </body>
 </html>

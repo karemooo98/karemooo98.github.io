@@ -9,8 +9,8 @@
   <style>
     :root {
       --primary: #3b82f6;
-      --gray-light: #334155;
-      --primary-light: #1e40af;
+      --primary-dark: #1e40af;
+      --primary-light: #60a5fa;
       --secondary: #0ea5e9;
       --accent: #f97316;
       --dark: #f8fafc;
@@ -25,16 +25,31 @@
       --header-bg: #0f172a;
       --input-bg: #334155;
       --border-radius: 12px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.6);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-      --transition: all 0.3s ease;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.6);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4), 0 4px 6px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes scaleIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
     
     body { 
@@ -45,11 +60,10 @@
       text-align: right;
       min-height: 100vh;
       display: grid;
-      grid-template-columns: 240px 1fr;
       grid-template-rows: auto 1fr;
       grid-template-areas: 
-        "sidebar header"
-        "sidebar main";
+        "header"
+        "main";
     }
     
     /* Header Styles */
@@ -60,103 +74,50 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-md);
       z-index: 10;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      animation: fadeIn 0.5s ease-out;
     }
     
     .header-title {
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .header-title i {
+      color: var(--primary);
     }
     
     .user-info {
       display: flex;
       align-items: center;
       gap: 12px;
+      animation: slideIn 0.5s ease-out;
     }
     
     .user-avatar {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: var(--primary-light);
-      color: var(--primary);
+      background: var(--primary-dark);
+      color: var(--primary-light);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       font-size: 1.2rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
     }
     
-    .user-name {
-      font-weight: 500;
-    }
-    
-    /* Sidebar Styles */
-    .sidebar {
-      grid-area: sidebar;
-      background: var(--primary-dark);
-      color: white;
-      padding: 30px 0;
-      display: flex;
-      flex-direction: column;
+    .user-avatar:hover {
+      transform: scale(1.05);
       box-shadow: var(--shadow-md);
-      z-index: 20;
-    }
-    
-    .logo {
-      padding: 0 24px 24px;
-      font-size: 1.5rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      margin-bottom: 24px;
-    }
-    
-    .nav-item {
-      padding: 12px 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: rgba(255,255,255,0.8);
-      text-decoration: none;
-      transition: var(--transition);
-      cursor: pointer;
-    }
-    
-    .nav-item:hover, .nav-item.active {
-      background: rgba(255,255,255,0.1);
-      color: white;
-    }
-    
-    .nav-item i {
-      font-size: 1.2rem;
-      width: 24px;
-      text-align: center;
-    }
-    
-    .logout-btn {
-      margin-top: auto;
-      padding: 12px 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: rgba(255,255,255,0.8);
-      background: none;
-      border: none;
-      font-family: inherit;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: var(--transition);
-      text-align: right;
-    }
-    
-    .logout-btn:hover {
-      background: rgba(255,255,255,0.1);
-      color: white;
     }
     
     /* Main Content Styles */
@@ -164,13 +125,18 @@
       grid-area: main;
       padding: 30px;
       overflow-y: auto;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
     }
     
+    /* Dashboard Grid Styles */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 24px;
       margin-bottom: 30px;
+      animation: fadeIn 0.6s ease-out;
     }
     
     .stat-card {
@@ -182,11 +148,30 @@
       flex-direction: column;
       gap: 12px;
       transition: var(--transition);
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--primary-light));
+      opacity: 0;
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover::before {
+      opacity: 1;
     }
     
     .stat-card:hover {
+      transform: translateY(-5px);
       box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
     }
     
     .stat-card-title {
@@ -196,44 +181,52 @@
     }
     
     .stat-card-value {
-      font-size: 2rem;
+      font-size: 2.5rem;
       font-weight: 700;
       color: var(--dark);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     
     .stat-card-icon {
       margin-top: auto;
       align-self: flex-end;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover .stat-card-icon {
+      transform: scale(1.1) rotate(5deg);
     }
     
     .stat-card.primary .stat-card-icon {
-      background: var(--primary-light);
-      color: var(--primary);
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--primary-light);
     }
     
     .stat-card.success .stat-card-icon {
-      background: rgba(16, 185, 129, 0.1);
+      background: rgba(16, 185, 129, 0.2);
       color: var(--success);
     }
     
     .stat-card.warning .stat-card-icon {
-      background: rgba(245, 158, 11, 0.1);
+      background: rgba(245, 158, 11, 0.2);
       color: var(--warning);
     }
     
+    /* Card Styles */
     .card {
       background: var(--card-bg);
       border-radius: var(--border-radius);
       box-shadow: var(--shadow-sm);
       margin-bottom: 30px;
-      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: scaleIn 0.5s ease-out;
     }
     
     .card-header {
@@ -242,36 +235,24 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: rgba(255,255,255,0.02);
     }
     
     .card-title {
       font-size: 1.25rem;
       font-weight: 700;
       color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     
-    .card-body {
-      padding: 24px;
+    .card-title i {
+      color: var(--primary);
+      opacity: 0.9;
     }
     
     /* Form Styles */
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    .form-label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: var(--dark);
-    }
-    
     .form-control {
       width: 100%;
       padding: 12px 16px;
@@ -287,9 +268,10 @@
     .form-control:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
     
+    /* Button Styles */
     .btn {
       padding: 12px 24px;
       font-size: 1rem;
@@ -303,53 +285,136 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease-out, height 0.6s ease-out;
+    }
+    
+    .btn:hover::after {
+      width: 200%;
+      height: 200%;
     }
     
     .btn-primary {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
       box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
     }
     
     .btn-primary:hover {
-      background: var(--primary-dark);
+      transform: translateY(-2px);
       box-shadow: 0 6px 8px rgba(37, 99, 235, 0.3);
     }
     
     .btn-danger {
-      background: var(--danger);
+      background: linear-gradient(135deg, var(--danger), #dc2626);
       color: white;
     }
     
     .btn-danger:hover {
-      background: #dc2626;
+      transform: translateY(-2px);
     }
     
-    .btn-sm {
-      padding: 8px 16px;
-      font-size: 0.875rem;
+    /* Tab Styles */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      padding: 5px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    .tab-btn {
+      padding: 12px 24px;
+      border: none;
+      background: none;
+      color: var(--gray);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border-radius: var(--border-radius);
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .tab-btn i {
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+    
+    .tab-btn:hover {
+      color: var(--dark);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .tab-btn:hover i {
+      transform: scale(1.1);
+    }
+    
+    .tab-btn.active {
+      color: var(--dark);
+      background: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .tab-btn.active i {
+      animation: scaleIn 0.3s ease-out;
+    }
+    
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    .tab-content.active {
+      display: block;
     }
     
     /* Table Styles */
     .table-container {
-      overflow-x: auto;
       border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
     
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.95rem;
+      background: var(--card-bg);
     }
     
     thead {
-      background: var(--primary-light);
-      color: var(--primary-dark);
+      background: var(--primary-dark);
+      color: var(--dark);
     }
     
     th {
       font-weight: 600;
       text-align: right;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
     }
     
     th, td {
@@ -357,25 +422,33 @@
       border-bottom: 1px solid var(--gray-light);
     }
     
+    tbody tr {
+      transition: var(--transition);
+    }
+    
     tbody tr:hover {
-      background: rgba(226, 232, 240, 0.3);
+      background: rgba(255,255,255,0.05);
     }
     
     .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      border-radius: 20px;
       font-size: 0.75rem;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .badge-primary {
-      background: var(--primary-light);
-      color: var(--primary-dark);
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--primary-light);
     }
     
     .badge-success {
-      background: rgba(16, 185, 129, 0.1);
+      background: rgba(16, 185, 129, 0.2);
       color: var(--success);
     }
     
@@ -458,91 +531,175 @@
     
     /* Responsive Styles */
     @media (max-width: 992px) {
-      body {
+      main {
+        padding: 20px;
+      }
+      
+      .dashboard-grid {
         grid-template-columns: 1fr;
-        grid-template-areas: 
-          "header"
-          "main";
       }
       
-      .sidebar {
-        position: fixed;
-        top: 0;
-        right: -240px;
-        height: 100vh;
-        transition: var(--transition);
+      .form-grid {
+        grid-template-columns: 1fr;
       }
       
-      .sidebar.active {
-        right: 0;
+      .header-title {
+        font-size: 1.2rem;
       }
       
-      .menu-toggle {
-        display: block;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        color: var(--dark);
-        cursor: pointer;
+      .user-info {
+        font-size: 0.9rem;
+      }
+      
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.8rem;
       }
     }
     
-    @media (min-width: 993px) {
-      .menu-toggle {
-        display: none;
+    @media (max-width: 480px) {
+      header {
+        padding: 12px 16px;
       }
+      
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+      }
+    }
+
+    /* Add these styles for the toggle switch and incentive summary */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .toggle-input {
+      display: none;
+    }
+
+    .toggle-label {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--gray-light);
+      transition: var(--transition);
+      border-radius: 34px;
+    }
+
+    .toggle-label:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: var(--dark);
+      transition: var(--transition);
+      border-radius: 50%;
+    }
+
+    .toggle-input:checked + .toggle-label {
+      background-color: var(--success);
+    }
+
+    .toggle-input:checked + .toggle-label:before {
+      transform: translateX(26px);
+    }
+
+    .incentive-summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .incentive-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 1.1rem;
+    }
+
+    .incentive-item:not(:last-child) {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .incentive-item span:last-child {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* Holiday Days Selector Styles */
+    .days-selector {
+        display: flex;
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    .day-btn {
+        padding: 5px 10px;
+        border: 1px solid var(--primary);
+        background: none;
+        color: var(--primary);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .day-btn:hover {
+        background: rgba(59, 130, 246, 0.1);
+    }
+
+    .day-btn.active {
+        background: var(--primary);
+        color: white;
+    }
+
+    .save-holidays {
+        margin-top: 10px;
+        padding: 5px 15px;
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .save-holidays:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .save-holidays i {
+        margin-left: 5px;
     }
   </style>
 </head>
 <body>
-  <!-- Sidebar Navigation -->
-  <aside class="sidebar" id="sidebar">
-    <div class="logo">
-      <i class="fas fa-chart-line"></i>
-      <span>لوحة التحكم</span>
-    </div>
-    
-    <div class="nav-item active">
-      <i class="fas fa-home"></i>
-      <span>الرئيسية</span>
-    </div>
-    
-    <div class="nav-item">
-      <i class="fas fa-users"></i>
-      <span>الموظفين</span>
-    </div>
-    
-    <div class="nav-item">
-      <i class="fas fa-mobile-alt"></i>
-      <span>الأجهزة</span>
-    </div>
-    
-    <div class="nav-item">
-      <i class="fas fa-chart-bar"></i>
-      <span>التقارير</span>
-    </div>
-    
-    <div class="nav-item">
-      <i class="fas fa-cog"></i>
-      <span>الإعدادات</span>
-    </div>
-    
-    <button class="logout-btn" onclick="logout()">
-      <i class="fas fa-sign-out-alt"></i>
-      <span>تسجيل الخروج</span>
-    </button>
-  </aside>
-  
   <!-- Header -->
   <header>
-    <button class="menu-toggle" id="menuToggle">
-      <i class="fas fa-bars"></i>
-    </button>
+    <div class="header-title">
+      <i class="fas fa-cog"></i>
+      لوحة تحكم المدير
+    </div>
     
-    <div class="header-title">لوحة تحكم المدير</div>
-    
-    <div class="user-info">
+          <div class="user-info">
       <div class="user-name" id="adminName">المدير</div>
+      <button class="btn btn-danger" onclick="logout()" style="margin: 0 12px;">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>تسجيل الخروج</span>
+      </button>
       <div class="user-avatar" id="userAvatar">م</div>
     </div>
   </header>
@@ -579,7 +736,10 @@
     <!-- Add Employee Card -->
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">إضافة موظف جديد</h2>
+        <h2 class="card-title">
+          <i class="fas fa-user-plus"></i>
+          إضافة موظف جديد
+        </h2>
       </div>
       <div class="card-body">
         <div class="form-grid">
@@ -614,56 +774,82 @@
       </div>
     </div>
     
-    <!-- Employees List Card -->
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">قائمة الموظفين</h2>
-      </div>
-      <div class="card-body">
-        <div class="table-container" id="employeesList">
-          جار التحميل...
-        </div>
-      </div>
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('employees')">
+        <i class="fas fa-users"></i> قائمة الموظفين
+      </button>
+      <button class="tab-btn" onclick="showTab('serial')">
+        <i class="fas fa-search"></i> البحث عن رقم سيريال
+      </button>
+      <button class="tab-btn" onclick="showTab('submissions')">
+        <i class="fas fa-clipboard-list"></i> تسجيلات الموظفين
+      </button>
     </div>
     
-    <!-- Serial Number Search Card -->
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">البحث عن رقم سيريال</h2>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <label class="form-label">رقم السيريال</label>
-          <div style="display: flex; gap: 10px;">
-            <input type="text" id="serialSearch" class="form-control" placeholder="أدخل رقم السيريال للبحث" />
-            <button class="btn btn-primary" onclick="searchBySerial()">
-              <i class="fas fa-search"></i>
-              <span>بحث</span>
-            </button>
+    <!-- Tab Contents -->
+    <div id="employeesTab" class="tab-content active">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-users"></i>
+            قائمة الموظفين
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="table-container" id="employeesList">
+            جار التحميل...
           </div>
         </div>
-        
-        <div id="serialSearchResults" class="mt-4">
-          أدخل رقم سيريال للبحث عن الموظف الذي قام بتسجيله.
+      </div>
+    </div>
+    
+    <div id="serialTab" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-search"></i>
+            البحث عن رقم سيريال
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">رقم السيريال</label>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="serialSearch" class="form-control" placeholder="أدخل رقم السيريال للبحث" />
+              <button class="btn btn-primary" onclick="searchBySerial()">
+                <i class="fas fa-search"></i>
+                <span>بحث</span>
+              </button>
+            </div>
+          </div>
+          
+          <div id="serialSearchResults" class="mt-4">
+            أدخل رقم سيريال للبحث عن الموظف الذي قام بتسجيله.
+          </div>
         </div>
       </div>
     </div>
     
-    <!-- Employee Submissions Card -->
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">تسجيلات الموظفين</h2>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <label class="form-label">اختر موظف</label>
-          <select id="employeeSelect" class="form-control" onchange="loadEmployeeSubmissions()">
-            <option value="">-- اختر موظف --</option>
-          </select>
+    <div id="submissionsTab" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-clipboard-list"></i>
+            تسجيلات الموظفين
+          </h2>
         </div>
-        
-        <div id="employeeSubmissions" class="mt-4">
-          اختر موظفًا لعرض تسجيلاته.
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">اختر موظف</label>
+            <select id="employeeSelect" class="form-control" onchange="loadEmployeeSubmissions()">
+              <option value="">-- اختر موظف --</option>
+            </select>
+          </div>
+          
+          <div id="employeeSubmissions" class="mt-4">
+            اختر موظفًا لعرض تسجيلاته.
+          </div>
         </div>
       </div>
     </div>
@@ -685,6 +871,84 @@
     </div>
   </div>
 
+  <!-- Edit Submission Modal -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-edit"></i>
+          تعديل التسجيل
+        </h3>
+        <button class="modal-close" onclick="closeEditModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">نوع الجهاز</label>
+            <select id="editDeviceType" class="form-control">
+              <option value="">-- اختر نوع الجهاز --</option>
+              <option value="A50">A50</option>
+              <option value="A920">A920</option>
+              <option value="F310">F310</option>
+              <option value="P2">P2</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">عدد الأجهزة</label>
+            <input type="number" id="editDeviceCount" class="form-control" min="1" />
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">عدد الأجهزة المعطوبة</label>
+            <input type="number" id="editFaultyCount" class="form-control" min="0" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">يوم عطلة؟</label>
+            <div class="toggle-switch">
+              <input type="checkbox" id="editIsHoliday" class="toggle-input">
+              <label for="editIsHoliday" class="toggle-label"></label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">أرقام السيريال (سطر واحد لكل جهاز)</label>
+          <textarea id="editSerialNumbers" class="form-control" rows="4"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">ملاحظات</label>
+          <textarea id="editNotes" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="incentive-summary">
+          <div class="incentive-item">
+            <span>الحافز لكل جهاز:</span>
+            <span id="editPerDeviceIncentive">500</span>
+            <span>دينار</span>
+          </div>
+          <div class="incentive-item">
+            <span>إجمالي الحافز:</span>
+            <span id="editTotalIncentive">0</span>
+            <span>دينار</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="deleteSubmission()">
+          <i class="fas fa-trash"></i>
+          حذف التسجيل
+        </button>
+        <button class="btn btn-primary" onclick="saveEdit()">
+          <i class="fas fa-save"></i>
+          حفظ التعديلات
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script>
@@ -700,6 +964,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // أيام الأسبوع بالعربية
+    const DAYS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
     // Authentication Check
     const role = localStorage.getItem("role");
     const adminName = localStorage.getItem("employeeName");
@@ -709,11 +976,6 @@
     }
     document.getElementById("adminName").textContent = adminName || "المدير";
     document.getElementById("userAvatar").textContent = adminName ? adminName.charAt(0) : "م";
-
-    // Mobile Menu Toggle
-    document.getElementById("menuToggle").addEventListener("click", function() {
-      document.getElementById("sidebar").classList.toggle("active");
-    });
 
     // Logout Function
     function logout() {
@@ -754,13 +1016,16 @@
 
     // Load Employees Function
     function loadEmployees() {
+      document.getElementById("employeesList").innerHTML = '<div style="padding: 20px;">جاري تحميل بيانات الموظفين...</div>';
+      
       db.collection("employees").where("role", "==", "employee").get()
         .then(snapshot => {
           const select = document.getElementById("employeeSelect");
           select.innerHTML = '<option value="">-- اختر موظف --</option>';
 
           if (snapshot.empty) {
-            document.getElementById("employeesList").textContent = "لا يوجد موظفين.";
+            document.getElementById("employeesList").innerHTML = 
+              '<div style="padding: 20px; color: var(--gray);">لا يوجد موظفين مسجلين في النظام.</div>';
             return;
           }
           
@@ -770,32 +1035,71 @@
                 <th>اسم المستخدم</th>
                 <th>الاسم</th>
                 <th>الدور</th>
+                <th>أيام العطل</th>
                 <th>الإجراءات</th>
               </tr>
             </thead>
             <tbody>`;
             
           snapshot.forEach(doc => {
-            const d = doc.data();
-            html += `<tr>
-              <td>${d.id}</td>
-              <td>${d.name}</td>
-              <td><span class="badge badge-${d.role === 'admin' ? 'primary' : 'success'}">${d.role === "admin" ? "مدير" : "موظف"}</span></td>
-              <td>
-                <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${d.id}')">
-                  <i class="fas fa-trash"></i> حذف
-                </button>
-              </td>
-            </tr>`;
+            try {
+              const d = doc.data();
+              if (!d.id || !d.name) {
+                console.warn(`بيانات غير مكتملة للموظف: ${doc.id}`, d);
+                return;
+              }
+              
+              html += `<tr>
+                <td>${d.id}</td>
+                <td>${d.name}</td>
+                <td><span class="badge badge-${d.role === 'admin' ? 'primary' : 'success'}">${d.role === "admin" ? "مدير" : "موظف"}</span></td>
+                <td>
+                    <div class="days-selector" id="days-${d.id}">
+                        ${DAYS.map((day, index) => `
+                            <button class="day-btn" data-day="${index}" onclick="toggleDay('${d.id}', ${index})">${day}</button>
+                        `).join('')}
+                    </div>
+                    <button class="save-holidays" onclick="saveHolidays('${d.id}')">
+                        <i class="fas fa-save"></i>
+                        حفظ
+                    </button>
+                </td>
+                <td>
+                  <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${d.id}')">
+                    <i class="fas fa-trash"></i> حذف
+                  </button>
+                </td>
+              </tr>`;
 
-            const option = document.createElement("option");
-            option.value = d.id;
-            option.textContent = `${d.name} (${d.id})`;
-            select.appendChild(option);
+              const option = document.createElement("option");
+              option.value = d.id;
+              option.textContent = `${d.name} (${d.id})`;
+              select.appendChild(option);
+            } catch (err) {
+              console.error(`خطأ في معالجة بيانات الموظف: ${doc.id}`, err);
+            }
           });
           
           html += `</tbody></table>`;
           document.getElementById("employeesList").innerHTML = html;
+          
+          // تحميل أيام العطل لكل موظف
+          snapshot.forEach(doc => {
+              loadEmployeeHolidays(doc.data().id);
+          });
+        })
+        .catch(err => {
+          console.error("خطأ في تحميل بيانات الموظفين:", err);
+          document.getElementById("employeesList").innerHTML = 
+            `<div style="padding: 20px; color: var(--danger);">
+              <i class="fas fa-exclamation-triangle"></i>
+              حدث خطأ أثناء تحميل بيانات الموظفين. الرجاء المحاولة مرة أخرى.
+              <br>
+              <button class="btn btn-primary" onclick="loadEmployees()" style="margin-top: 10px;">
+                <i class="fas fa-sync"></i>
+                إعادة المحاولة
+              </button>
+            </div>`;
         });
     }
 
@@ -812,7 +1116,9 @@
         });
     }
 
-    // Load Employee Submissions Function
+    let currentEditId = null;
+
+    // Load Employee Submissions Function - Updated
     function loadEmployeeSubmissions() {
       const empId = document.getElementById("employeeSelect").value;
       if (!empId) {
@@ -832,6 +1138,7 @@
 
           let totalDevices = 0;
           let totalFaulty = 0;
+          let totalIncentive = 0;
 
           let html = `<div class="table-container">
             <table>
@@ -842,7 +1149,10 @@
                   <th>العدد</th>
                   <th>أرقام السيريال</th>
                   <th>الأجهزة المعطوبة</th>
+                  <th>يوم عطلة</th>
+                  <th>الحافز</th>
                   <th>ملاحظات</th>
+                  <th>الإجراءات</th>
                 </tr>
               </thead>
               <tbody>`;
@@ -853,9 +1163,13 @@
             const serials = d.serialNumbers || "-";
             const deviceCount = d.deviceCount || 0;
             const faultyCount = d.faultyCount || 0;
+            const isHoliday = d.isHoliday || false;
+            const incentivePerDevice = isHoliday ? HOLIDAY_INCENTIVE : NORMAL_INCENTIVE;
+            const totalSubmissionIncentive = deviceCount * incentivePerDevice;
 
             totalDevices += deviceCount;
             totalFaulty += faultyCount;
+            totalIncentive += totalSubmissionIncentive;
 
             html += `<tr>
               <td>${date}</td>
@@ -867,7 +1181,18 @@
                 </button>
               </td>
               <td>${faultyCount}</td>
+              <td>
+                <span class="badge ${isHoliday ? 'badge-success' : 'badge-primary'}">
+                  ${isHoliday ? 'نعم' : 'لا'}
+                </span>
+              </td>
+              <td>${totalSubmissionIncentive.toLocaleString()} د.ع</td>
               <td>${d.notes || "-"}</td>
+              <td>
+                <button class="btn btn-primary btn-sm" onclick="editSubmission('${doc.id}')">
+                  <i class="fas fa-edit"></i> تعديل
+                </button>
+              </td>
             </tr>`;
           });
 
@@ -879,17 +1204,119 @@
                 <td></td>
                 <td>${totalFaulty}</td>
                 <td></td>
+                <td>${totalIncentive.toLocaleString()} د.ع</td>
+                <td colspan="2"></td>
               </tr>
             </tfoot>
           </table>
           </div>`;
 
           document.getElementById("employeeSubmissions").innerHTML = html;
+        });
+    }
+
+    // Edit Submission Function
+    function editSubmission(docId) {
+      currentEditId = docId;
+      
+      db.collection("device_submissions").doc(docId).get()
+        .then(doc => {
+          if (!doc.exists) {
+            alert("لم يتم العثور على التسجيل!");
+            return;
+          }
+
+          const data = doc.data();
+          
+          document.getElementById("editDeviceType").value = data.deviceType || "";
+          document.getElementById("editDeviceCount").value = data.deviceCount || 0;
+          document.getElementById("editFaultyCount").value = data.faultyCount || 0;
+          document.getElementById("editSerialNumbers").value = data.serialNumbers ? data.serialNumbers.split(", ").join("\n") : "";
+          document.getElementById("editNotes").value = data.notes || "";
+          document.getElementById("editIsHoliday").checked = data.isHoliday || false;
+          
+          updateIncentiveCalculation();
+          document.getElementById("editModal").classList.add("active");
         })
         .catch(err => {
-          console.error(err);
-          document.getElementById("employeeSubmissions").textContent = "حدث خطأ أثناء تحميل التسجيلات.";
+          console.error("Error loading submission:", err);
+          alert("حدث خطأ أثناء تحميل البيانات");
         });
+    }
+
+    // Save Edit Function
+    function saveEdit() {
+      if (!currentEditId) return;
+
+      const deviceType = document.getElementById("editDeviceType").value;
+      const deviceCount = parseInt(document.getElementById("editDeviceCount").value) || 0;
+      const serialNumbersRaw = document.getElementById("editSerialNumbers").value.trim();
+      const serialNumbersArray = serialNumbersRaw
+        .split(/\r?\n/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+      const faultyCount = parseInt(document.getElementById("editFaultyCount").value) || 0;
+      const notes = document.getElementById("editNotes").value.trim();
+      const isHoliday = document.getElementById("editIsHoliday").checked;
+
+      if (!deviceType || !deviceCount || serialNumbersArray.length === 0) {
+        alert("يرجى ملء جميع الحقول المطلوبة.");
+        return;
+      }
+
+      if (serialNumbersArray.length !== deviceCount) {
+        alert(`عدد الأجهزة (${deviceCount}) لا يتطابق مع عدد أرقام السيريال (${serialNumbersArray.length}).`);
+        return;
+      }
+
+      const uniqueSerials = new Set(serialNumbersArray);
+      if (uniqueSerials.size !== serialNumbersArray.length) {
+        alert("تم اكتشاف أرقام سيريال مكررة.");
+        return;
+      }
+
+      db.collection("device_submissions").doc(currentEditId).update({
+        deviceType,
+        deviceCount,
+        serialNumbers: serialNumbersArray.join(", "),
+        faultyCount,
+        notes,
+        isHoliday,
+        lastModified: new Date()
+      })
+      .then(() => {
+        alert("تم حفظ التعديلات بنجاح.");
+        closeEditModal();
+        loadEmployeeSubmissions();
+        updateDashboardStats();
+      })
+      .catch(err => {
+        console.error("Error updating submission:", err);
+        alert("حدث خطأ أثناء حفظ التعديلات");
+      });
+    }
+
+    // Delete Submission Function
+    function deleteSubmission() {
+      if (!currentEditId || !confirm("هل أنت متأكد من حذف هذا التسجيل؟")) return;
+
+      db.collection("device_submissions").doc(currentEditId).delete()
+        .then(() => {
+          alert("تم حذف التسجيل بنجاح.");
+          closeEditModal();
+          loadEmployeeSubmissions();
+          updateDashboardStats();
+        })
+        .catch(err => {
+          console.error("Error deleting submission:", err);
+          alert("حدث خطأ أثناء حذف التسجيل");
+        });
+    }
+
+    // Close Edit Modal Function
+    function closeEditModal() {
+      document.getElementById("editModal").classList.remove("active");
+      currentEditId = null;
     }
 
     // Show Serial Numbers Function
@@ -1007,6 +1434,30 @@
         });
     }
 
+    // Show Tab Function
+    function showTab(tabId) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Remove active class from all buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Show selected tab
+      document.getElementById(tabId + 'Tab').classList.add('active');
+      
+      // Add active class to clicked button
+      event.currentTarget.classList.add('active');
+      
+      // Load data if needed
+      if (tabId === 'employees') {
+        loadEmployees();
+      }
+    }
+
     // Initialize
     window.onload = function() {
       loadEmployees();
@@ -1022,6 +1473,70 @@
         });
       }
     };
+
+    const NORMAL_INCENTIVE = 500;
+    const HOLIDAY_INCENTIVE = 750;
+
+    // Add event listeners for incentive calculation
+    document.getElementById("editDeviceCount").addEventListener("input", updateIncentiveCalculation);
+    document.getElementById("editIsHoliday").addEventListener("change", updateIncentiveCalculation);
+
+    // Function to update incentive calculation
+    function updateIncentiveCalculation() {
+      const deviceCount = parseInt(document.getElementById("editDeviceCount").value) || 0;
+      const isHoliday = document.getElementById("editIsHoliday").checked;
+      const incentivePerDevice = isHoliday ? HOLIDAY_INCENTIVE : NORMAL_INCENTIVE;
+      const totalIncentive = deviceCount * incentivePerDevice;
+
+      document.getElementById("editPerDeviceIncentive").textContent = incentivePerDevice;
+      document.getElementById("editTotalIncentive").textContent = totalIncentive.toLocaleString();
+    }
+
+    // تحميل أيام العطل للموظف
+    function loadEmployeeHolidays(employeeId) {
+        db.collection("weekly_holidays").doc(employeeId).get()
+            .then(doc => {
+                if (!doc.exists) return;
+                
+                const days = doc.data().days || [];
+                const buttons = document.querySelectorAll(`#days-${employeeId} .day-btn`);
+                
+                buttons.forEach(button => {
+                    const day = parseInt(button.dataset.day);
+                    if (days.includes(day)) {
+                        button.classList.add('active');
+                    }
+                });
+            })
+            .catch(err => {
+                console.error("خطأ في تحميل أيام العطل:", err);
+            });
+    }
+
+    // تبديل حالة يوم العطل
+    function toggleDay(employeeId, dayIndex) {
+        const button = document.querySelector(`#days-${employeeId} .day-btn[data-day="${dayIndex}"]`);
+        button.classList.toggle('active');
+    }
+
+    // حفظ أيام العطل
+    function saveHolidays(employeeId) {
+        const buttons = document.querySelectorAll(`#days-${employeeId} .day-btn`);
+        const selectedDays = Array.from(buttons)
+            .filter(button => button.classList.contains('active'))
+            .map(button => parseInt(button.dataset.day));
+        
+        db.collection("weekly_holidays").doc(employeeId).set({
+            days: selectedDays
+        })
+        .then(() => {
+            alert("تم حفظ أيام العطل بنجاح");
+        })
+        .catch(err => {
+            console.error("خطأ في حفظ أيام العطل:", err);
+            alert("حدث خطأ في حفظ أيام العطل");
+        });
+    }
   </script>
 </body>
 </html>

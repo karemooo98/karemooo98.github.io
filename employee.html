@@ -297,6 +297,75 @@
       display: flex;
       justify-content: flex-end;
     }
+
+    /* Add these styles for the toggle switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .toggle-input {
+      display: none;
+    }
+
+    .toggle-label {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--gray-light);
+      transition: var(--transition);
+      border-radius: 34px;
+    }
+
+    .toggle-label:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: var(--dark);
+      transition: var(--transition);
+      border-radius: 50%;
+    }
+
+    .toggle-input:checked + .toggle-label {
+      background-color: var(--success);
+    }
+
+    .toggle-input:checked + .toggle-label:before {
+      transform: translateX(26px);
+    }
+
+    .incentive-summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .incentive-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 1.1rem;
+    }
+
+    .incentive-item:not(:last-child) {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .incentive-item span:last-child {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -318,13 +387,13 @@
     <!-- Submission Form Card -->
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">تسليم أجهزة جديدة</h2>
+        <h2 class="card-title">تسجيل الأجهزة</h2>
       </div>
       <div class="card-body">
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">نوع الجهاز</label>
-            <select id="deviceType" class="form-control" aria-label="اختر نوع الجهاز">
+            <select id="deviceType" class="form-control" onchange="updateIncentiveCalculation()">
               <option value="">-- اختر نوع الجهاز --</option>
               <option value="A50">A50</option>
               <option value="A920">A920</option>
@@ -335,28 +404,41 @@
           
           <div class="form-group">
             <label class="form-label">عدد الأجهزة</label>
-            <input type="number" id="deviceCount" class="form-control" placeholder="أدخل عدد الأجهزة" min="1" />
+            <input type="number" id="deviceCount" class="form-control" min="1" onchange="updateIncentiveCalculation()" />
           </div>
           
           <div class="form-group">
-            <label class="form-label">عدد الأجهزة المعطوبة (اختياري)</label>
-            <input type="number" id="faultyCount" class="form-control" placeholder="أدخل عدد الأجهزة المعطوبة" min="0" />
+            <label class="form-label">عدد الأجهزة المعطوبة</label>
+            <input type="number" id="faultyCount" class="form-control" min="0" />
           </div>
         </div>
         
         <div class="form-group">
           <label class="form-label">أرقام السيريال (سطر واحد لكل جهاز)</label>
-          <textarea id="serialNumbers" class="form-control" placeholder="أدخل رقم سيريال واحد في كل سطر"></textarea>
+          <textarea id="serialNumbers" class="form-control" rows="4"></textarea>
         </div>
         
         <div class="form-group">
-          <label class="form-label">ملاحظات (اختياري)</label>
-          <textarea id="notes" class="form-control" placeholder="أدخل أي ملاحظات إضافية"></textarea>
+          <label class="form-label">ملاحظات</label>
+          <textarea id="notes" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="incentive-summary">
+          <div class="incentive-item">
+            <span>الحافز لكل جهاز:</span>
+            <span id="perDeviceIncentive">500</span>
+            <span>دينار</span>
+          </div>
+          <div class="incentive-item">
+            <span>إجمالي الحافز:</span>
+            <span id="totalIncentive">0</span>
+            <span>دينار</span>
+          </div>
         </div>
         
-        <button class="btn btn-primary" onclick="submitData()">
-          <i class="fas fa-paper-plane"></i>
-          <span>تسليم الأجهزة</span>
+        <button class="btn btn-primary" onclick="submitDevices()">
+          <i class="fas fa-save"></i>
+          <span>تسجيل الأجهزة</span>
         </button>
       </div>
     </div>
@@ -411,8 +493,45 @@
     document.getElementById("employeeName").textContent = employeeName || "الموظف";
     document.getElementById("userAvatar").textContent = employeeName ? employeeName.charAt(0) : "م";
 
-    // Submit Data Function
-    function submitData() {
+    const NORMAL_INCENTIVE = 500;
+    const HOLIDAY_INCENTIVE = 750;
+
+    function updateIncentiveCalculation() {
+      const deviceCount = parseInt(document.getElementById("deviceCount").value) || 0;
+      const employeeId = localStorage.getItem("employeeId");
+      
+      if (!employeeId) return;
+
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      today.setHours(0, 0, 0, 0);
+
+      // Check weekly pattern first
+      db.collection("weekly_holidays")
+        .doc(employeeId)
+        .get()
+        .then(doc => {
+          const weeklyHolidays = doc.exists ? doc.data().days || [] : [];
+          const isWeeklyHoliday = weeklyHolidays.includes(dayOfWeek);
+
+          // Then check specific dates
+          return db.collection("holiday_dates")
+            .where("employeeId", "==", employeeId)
+            .where("date", "==", today)
+            .get()
+            .then(snapshot => {
+              const isSpecificHoliday = !snapshot.empty;
+              const isHoliday = isWeeklyHoliday || isSpecificHoliday;
+              const incentivePerDevice = isHoliday ? HOLIDAY_INCENTIVE : NORMAL_INCENTIVE;
+              const totalIncentive = deviceCount * incentivePerDevice;
+
+              document.getElementById("perDeviceIncentive").textContent = incentivePerDevice;
+              document.getElementById("totalIncentive").textContent = totalIncentive.toLocaleString();
+            });
+        });
+    }
+
+    function submitDevices() {
       const deviceType = document.getElementById("deviceType").value;
       const deviceCount = parseInt(document.getElementById("deviceCount").value) || 0;
       const serialNumbersRaw = document.getElementById("serialNumbers").value.trim();
@@ -420,63 +539,90 @@
         .split(/\r?\n/)
         .map(s => s.trim())
         .filter(s => s.length > 0);
-
       const faultyCount = parseInt(document.getElementById("faultyCount").value) || 0;
       const notes = document.getElementById("notes").value.trim();
-
+      
       if (!deviceType || !deviceCount || serialNumbersArray.length === 0) {
         alert("يرجى ملء جميع الحقول المطلوبة.");
         return;
       }
-
+      
       if (serialNumbersArray.length !== deviceCount) {
         alert(`عدد الأجهزة (${deviceCount}) لا يتطابق مع عدد أرقام السيريال (${serialNumbersArray.length}).`);
         return;
       }
-
+      
       const uniqueSerials = new Set(serialNumbersArray);
       if (uniqueSerials.size !== serialNumbersArray.length) {
         alert("تم اكتشاف أرقام سيريال مكررة.");
         return;
       }
 
-      // Show loading state
-      const submitBtn = document.querySelector('.btn-primary');
-      const originalBtnText = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ الإرسال...';
-      submitBtn.disabled = true;
+      const employeeId = localStorage.getItem("employeeId");
+      const employeeName = localStorage.getItem("employeeName");
+      
+      if (!employeeId || !employeeName) {
+        alert("الرجاء تسجيل الدخول مرة أخرى.");
+        window.location.href = "login.html";
+        return;
+      }
 
-      db.collection("device_submissions").add({
-        employeeId,
-        employeeName,
-        deviceType,
-        deviceCount,
-        serialNumbers: serialNumbersArray.join(", "),
-        faultyCount,
-        notes,
-        date: new Date()
-      })
-      .then(() => {
-        alert("تم تسليم الأجهزة بنجاح.");
-        // Reset form
-        document.getElementById("deviceType").value = "";
-        document.getElementById("deviceCount").value = "";
-        document.getElementById("faultyCount").value = "";
-        document.getElementById("notes").value = "";
-        document.getElementById("serialNumbers").value = "";
-        
-        // Reload today's submissions
-        loadTodaySubmissions();
-      })
-      .catch(err => {
-        console.error("Error submitting data:", err);
-        alert("حدث خطأ أثناء تسليم الأجهزة. يرجى المحاولة مرة أخرى.");
-      })
-      .finally(() => {
-        // Restore button state
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
-      });
+      // Check if today is a holiday (either specific date or weekly pattern)
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      today.setHours(0, 0, 0, 0);
+
+      // First check weekly pattern
+      db.collection("weekly_holidays")
+        .doc(employeeId)
+        .get()
+        .then(doc => {
+          const weeklyHolidays = doc.exists ? doc.data().days || [] : [];
+          const isWeeklyHoliday = weeklyHolidays.includes(dayOfWeek);
+
+          // Then check specific dates
+          return db.collection("holiday_dates")
+            .where("employeeId", "==", employeeId)
+            .where("date", "==", today)
+            .get()
+            .then(snapshot => {
+              const isSpecificHoliday = !snapshot.empty;
+              const isHoliday = isWeeklyHoliday || isSpecificHoliday;
+              const incentivePerDevice = isHoliday ? HOLIDAY_INCENTIVE : NORMAL_INCENTIVE;
+              const totalIncentive = deviceCount * incentivePerDevice;
+
+              return db.collection("device_submissions").add({
+                employeeId,
+                employeeName,
+                deviceType,
+                deviceCount,
+                serialNumbers: serialNumbersArray.join(", "),
+                faultyCount,
+                notes,
+                date: new Date(),
+                isHoliday,
+                isWeeklyHoliday,
+                isSpecificHoliday,
+                incentivePerDevice,
+                totalIncentive
+              });
+            });
+        })
+        .then(() => {
+          alert("تم تسجيل الأجهزة بنجاح.");
+          // Clear form
+          document.getElementById("deviceType").value = "";
+          document.getElementById("deviceCount").value = "";
+          document.getElementById("serialNumbers").value = "";
+          document.getElementById("faultyCount").value = "";
+          document.getElementById("notes").value = "";
+          updateIncentiveCalculation();
+          loadTodaySubmissions(); // Refresh the list
+        })
+        .catch(err => {
+          console.error("Error submitting devices:", err);
+          alert("حدث خطأ أثناء تسجيل الأجهزة");
+        });
     }
 
     // Load Today's Submissions
@@ -592,12 +738,13 @@
 
     // Initialize
     window.onload = function() {
+      updateIncentiveCalculation(); // Initialize incentive calculation
       loadTodaySubmissions();
       
       // Allow pressing Enter in serial numbers textarea without submitting
       document.getElementById("serialNumbers").addEventListener("keydown", function(e) {
         if (e.key === "Enter" && e.ctrlKey) {
-          submitData();
+          submitDevices();
         }
       });
     };

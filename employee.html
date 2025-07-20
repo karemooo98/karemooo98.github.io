@@ -397,6 +397,7 @@
               <option value="">-- اختر نوع الجهاز --</option>
               <option value="A50">A50</option>
               <option value="A920">A920</option>
+              <option value="A910s">A910s</option>
               <option value="F310">F310</option>
               <option value="P2">P2</option>
             </select>
@@ -558,71 +559,90 @@
         return;
       }
 
-      const employeeId = localStorage.getItem("employeeId");
-      const employeeName = localStorage.getItem("employeeName");
-      
-      if (!employeeId || !employeeName) {
-        alert("الرجاء تسجيل الدخول مرة أخرى.");
-        window.location.href = "login.html";
-        return;
-      }
-
-      // Check if today is a holiday (either specific date or weekly pattern)
-      const today = new Date();
-      const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-      today.setHours(0, 0, 0, 0);
-
-      // First check weekly pattern
-      db.collection("weekly_holidays")
-        .doc(employeeId)
-        .get()
-        .then(doc => {
-          const weeklyHolidays = doc.exists ? doc.data().days || [] : [];
-          const isWeeklyHoliday = weeklyHolidays.includes(dayOfWeek);
-
-          // Then check specific dates
-          return db.collection("holiday_dates")
-            .where("employeeId", "==", employeeId)
-            .where("date", "==", today)
-            .get()
-            .then(snapshot => {
-              const isSpecificHoliday = !snapshot.empty;
-              const isHoliday = isWeeklyHoliday || isSpecificHoliday;
-              const incentivePerDevice = isHoliday ? HOLIDAY_INCENTIVE : NORMAL_INCENTIVE;
-              const totalIncentive = deviceCount * incentivePerDevice;
-
-              return db.collection("device_submissions").add({
-                employeeId,
-                employeeName,
-                deviceType,
-                deviceCount,
-                serialNumbers: serialNumbersArray.join(", "),
-                faultyCount,
-                notes,
-                date: new Date(),
-                isHoliday,
-                isWeeklyHoliday,
-                isSpecificHoliday,
-                incentivePerDevice,
-                totalIncentive
-              });
-            });
-        })
-        .then(() => {
-          alert("تم تسجيل الأجهزة بنجاح.");
-          // Clear form
-          document.getElementById("deviceType").value = "";
-          document.getElementById("deviceCount").value = "";
-          document.getElementById("serialNumbers").value = "";
-          document.getElementById("faultyCount").value = "";
-          document.getElementById("notes").value = "";
-          updateIncentiveCalculation();
-          loadTodaySubmissions(); // Refresh the list
-        })
-        .catch(err => {
-          console.error("Error submitting devices:", err);
-          alert("حدث خطأ أثناء تسجيل الأجهزة");
+      // تحقق من وجود السيريالات مسبقاً في قاعدة البيانات
+      db.collection("device_submissions").get().then(snapshot => {
+        let allSerials = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.serialNumbers) {
+            // السيريالات مخزنة مفصولة بفواصل ومسافات
+            const serials = data.serialNumbers.split(",").map(s => s.trim());
+            allSerials = allSerials.concat(serials);
+          }
         });
+        // تحقق إذا كان أي سيريال مدخل موجود مسبقاً
+        const duplicate = serialNumbersArray.find(s => allSerials.includes(s));
+        if (duplicate) {
+          alert(`رقم السيريال (${duplicate}) موجود مسبقاً في النظام. يرجى التأكد من الأرقام المدخلة.`);
+          return;
+        }
+
+        const employeeId = localStorage.getItem("employeeId");
+        const employeeName = localStorage.getItem("employeeName");
+        
+        if (!employeeId || !employeeName) {
+          alert("الرجاء تسجيل الدخول مرة أخرى.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Check if today is a holiday (either specific date or weekly pattern)
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        today.setHours(0, 0, 0, 0);
+
+        // First check weekly pattern
+        db.collection("weekly_holidays")
+          .doc(employeeId)
+          .get()
+          .then(doc => {
+            const weeklyHolidays = doc.exists ? doc.data().days || [] : [];
+            const isWeeklyHoliday = weeklyHolidays.includes(dayOfWeek);
+
+            // Then check specific dates
+            return db.collection("holiday_dates")
+              .where("employeeId", "==", employeeId)
+              .where("date", "==", today)
+              .get()
+              .then(snapshot => {
+                const isSpecificHoliday = !snapshot.empty;
+                const isHoliday = isWeeklyHoliday || isSpecificHoliday;
+                const incentivePerDevice = isHoliday ? HOLIDAY_INCENTIVE : NORMAL_INCENTIVE;
+                const totalIncentive = deviceCount * incentivePerDevice;
+
+                return db.collection("device_submissions").add({
+                  employeeId,
+                  employeeName,
+                  deviceType,
+                  deviceCount,
+                  serialNumbers: serialNumbersArray.join(", "),
+                  faultyCount,
+                  notes,
+                  date: new Date(),
+                  isHoliday,
+                  isWeeklyHoliday,
+                  isSpecificHoliday,
+                  incentivePerDevice,
+                  totalIncentive
+                });
+              });
+          })
+          .then(() => {
+            alert("تم تسجيل الأجهزة بنجاح.");
+            // Clear form
+            document.getElementById("deviceType").value = "";
+            document.getElementById("deviceCount").value = "";
+            document.getElementById("serialNumbers").value = "";
+            document.getElementById("faultyCount").value = "";
+            document.getElementById("notes").value = "";
+            updateIncentiveCalculation();
+            loadTodaySubmissions(); // Refresh the list
+          })
+          .catch(err => {
+            console.error("Error submitting devices:", err);
+            alert("حدث خطأ أثناء تسجيل الأجهزة");
+          });
+      });
     }
 
     // Load Today's Submissions

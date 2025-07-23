@@ -8,27 +8,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     :root {
-      --primary: #3b82f6;
-      --primary-dark: #2563eb;
-      --primary-light: #1e40af;
-      --secondary: #0ea5e9;
-      --accent: #f97316;
-      --dark: #f8fafc;
-      --light: #0f172a;
-      --gray: #94a3b8;
-      --gray-light: #334155;
-      --gray-dark: #1e293b;
-      --success: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --card-bg: #1e293b;
-      --header-bg: #0f172a;
-      --input-bg: #334155;
-      --border-radius: 12px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.6);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-      --transition: all 0.3s ease;
+      --primary: #fff;
+      --primary-dark: #232323;
+      --primary-light: #b0b0b0;
+      --secondary: #232323;
+      --accent: #b0b0b0;
+      --dark: #fff;
+      --light: #101010;
+      --gray: #b0b0b0;
+      --gray-light: #232323;
+      --gray-dark: #181818;
+      --card-bg: #181818;
+      --header-bg: #101010;
+      --input-bg: #232323;
+      --border-radius: 22px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.10);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     * {
@@ -37,16 +32,14 @@
       box-sizing: border-box;
     }
     
-    body { 
-      font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; 
-      background: var(--light); 
-      color: var(--dark);
-      direction: rtl;
-      text-align: right;
+    body {
+      background: #101010;
+      color: #fff;
+      font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
       min-height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
     }
     
     .login-container {
@@ -58,9 +51,12 @@
     .login-card {
       background: var(--card-bg);
       border-radius: var(--border-radius);
-      box-shadow: var(--shadow-lg);
-      padding: 40px;
-      text-align: center;
+      box-shadow: var(--shadow-sm);
+      padding: 38px 32px 32px 32px;
+      width: 100%;
+      max-width: 370px;
+      border: 1.5px solid var(--gray-light);
+      color: #fff;
     }
     
     .logo {
@@ -90,37 +86,48 @@
     }
     
     .form-group {
-      margin-bottom: 20px;
-      text-align: right;
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      border-radius: 18px;
     }
     
     .form-label {
-      display: block;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+      font-size: 1rem;
+      color: #b0b0b0;
       font-weight: 500;
-      color: var(--dark);
+      letter-spacing: 0.2px;
     }
     
     .form-control {
       width: 100%;
-      padding: 14px 16px;
-      font-size: 1rem;
-      border-radius: var(--border-radius);
-      border: 1px solid var(--gray-light);
-      background: var(--input-bg);
-      color: var(--dark);
+      min-width: 0;
+      max-width: 100%;
+      font-size: 0.98rem;
+      padding: 11px 16px;
+      margin-bottom: 0;
+      margin-top: 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.09);
+      background: #181818;
+      color: #fff;
+      border: 1.5px solid #232323;
+      border-radius: 18px;
       transition: var(--transition);
       font-family: inherit;
     }
     
     .form-control:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      border-color: #b0b0b0;
+      box-shadow: 0 0 0 3px rgba(176,176,176,0.13);
+      background: #232323;
+      color: #fff;
     }
     
     .btn {
-      padding: 14px 24px;
+      padding: 12px 24px;
       font-size: 1rem;
       font-weight: 600;
       border-radius: var(--border-radius);
@@ -132,18 +139,17 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      background: #232323;
+      color: #fff;
       width: 100%;
+      margin-top: 10px;
+      border: 1.5px solid #232323;
     }
     
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
-    }
-    
-    .btn-primary:hover {
-      background: var(--primary-dark);
-      box-shadow: 0 6px 8px rgba(37, 99, 235, 0.3);
+    .btn:hover {
+      background: #181818;
+      color: #fff;
+      border-color: #b0b0b0;
     }
     
     .error-message {
@@ -157,6 +163,12 @@
       margin-top: 20px;
       color: var(--gray);
       font-size: 0.9rem;
+    }
+    .login-footer {
+      margin-top: 24px;
+      color: #b0b0b0;
+      text-align: center;
+      font-size: 0.98rem;
     }
   </style>
 </head>
@@ -178,7 +190,7 @@
         <input type="password" id="password" class="form-control" placeholder="كلمة المرور" autocomplete="off" />
       </div>
       
-      <button class="btn btn-primary" onclick="login()">
+      <button class="btn" onclick="login()">
         <i class="fas fa-sign-in-alt"></i>
         <span>تسجيل الدخول</span>
       </button>
@@ -218,7 +230,7 @@
       }
 
       // إضافة تأثير التحميل
-      const loginBtn = document.querySelector('.btn-primary');
+      const loginBtn = document.querySelector('.btn');
       const originalBtnContent = loginBtn.innerHTML;
       loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
       loginBtn.disabled = true;

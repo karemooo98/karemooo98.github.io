@@ -9,26 +9,32 @@
   <style>
     :root {
       --primary: #3b82f6;
-      --primary-dark: #1e40af;
+      --primary-dark: #23232b;
       --primary-light: #60a5fa;
-      --secondary: #0ea5e9;
-      --accent: #f97316;
-      --dark: #f8fafc;
-      --light: #0f172a;
-      --gray: #94a3b8;
-      --gray-light: #334155;
-      --gray-dark: #1e293b;
-      --success: #10b981;
+      --secondary: #a78bfa;
+      --accent: #22d3ee;
+      --dark: #fff;
+      --light: #101014;
+      --gray: #e5e7eb;
+      --gray-light: #23232b;
+      --gray-dark: #18181c;
+      --success: #22d3ee;
       --danger: #ef4444;
       --warning: #f59e0b;
-      --card-bg: #1e293b;
-      --header-bg: #0f172a;
-      --input-bg: #334155;
-      --border-radius: 12px;
-      --shadow-sm: 0 2px 4px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.6);
-      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
-      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4), 0 4px 6px rgba(0, 0, 0, 0.3);
+      --card-bg: #18181c;
+      --header-bg: #101014;
+      --input-bg: #23232b;
+      --border-radius: 22px;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.18);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.22);
+      --shadow-lg: 0 10px 24px rgba(0,0,0,0.28);
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --mini-card-width: 120px;
+      --mini-card-height: 80px;
+      --mini-card-radius: 18px;
+      --mini-card-font-size: 1.1rem;
+      --mini-card-value-size: 1.7rem;
+      --mini-card-gap: 12px;
     }
     
     * {
@@ -54,8 +60,8 @@
     
     body { 
       font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; 
-      background: var(--light); 
-      color: var(--dark);
+      background: #101010;
+      color: #fff;
       direction: rtl;
       text-align: right;
       min-height: 100vh;
@@ -64,6 +70,17 @@
       grid-template-areas: 
         "header"
         "main";
+    }
+    ::selection {
+      background: var(--primary);
+      color: #fff;
+    }
+    a, a:visited, a:active {
+      color: var(--primary);
+    }
+    a:hover {
+      color: var(--secondary);
+      text-decoration: underline;
     }
     
     /* Header Styles */
@@ -225,8 +242,9 @@
       border-radius: var(--border-radius);
       box-shadow: var(--shadow-sm);
       margin-bottom: 30px;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1.5px solid var(--gray-light);
       animation: scaleIn 0.5s ease-out;
+      color: #fff;
     }
     
     .card-header {
@@ -255,12 +273,17 @@
     /* Form Styles */
     .form-control {
       width: 100%;
-      padding: 12px 16px;
-      font-size: 1rem;
-      border-radius: var(--border-radius);
-      border: 1px solid var(--gray-light);
-      background: var(--input-bg);
-      color: var(--dark);
+      min-width: 0;
+      max-width: 100%;
+      font-size: 0.98rem;
+      padding: 11px 16px;
+      margin-bottom: 0;
+      margin-top: 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.09);
+      background: #18181c;
+      color: #fff;
+      border: 1.5px solid #23232b;
+      border-radius: 18px;
       transition: var(--transition);
       font-family: inherit;
     }
@@ -268,7 +291,9 @@
     .form-control:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.13);
+      background: #23232b;
+      color: #fff;
     }
     
     /* Button Styles */
@@ -287,6 +312,8 @@
       gap: 8px;
       position: relative;
       overflow: hidden;
+      background: #23232b;
+      color: #fff;
     }
     
     .btn::after {
@@ -308,23 +335,40 @@
     }
     
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+      background: #23232b;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.10);
+      border: 1.5px solid #23232b;
     }
     
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 8px rgba(37, 99, 235, 0.3);
+      background: #18181c;
+      color: #60a5fa;
+      border-color: #3b82f6;
     }
     
     .btn-danger {
       background: linear-gradient(135deg, var(--danger), #dc2626);
-      color: white;
+      color: #fff;
+      border: 1.5px solid var(--danger);
     }
     
     .btn-danger:hover {
-      transform: translateY(-2px);
+      background: linear-gradient(135deg, #dc2626, var(--danger));
+      color: #fff;
+      border-color: #dc2626;
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--secondary), #6366f1);
+      color: #fff;
+      border: 1.5px solid var(--secondary);
+    }
+    
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #6366f1, var(--secondary));
+      color: #fff;
+      border-color: #6366f1;
     }
     
     /* Tab Styles */
@@ -372,8 +416,8 @@
     }
     
     .tab-btn.active {
-      color: var(--dark);
-      background: var(--primary);
+      color: #fff;
+      background: var(--primary-dark);
       box-shadow: var(--shadow-sm);
     }
     
@@ -402,11 +446,12 @@
       border-collapse: collapse;
       font-size: 0.95rem;
       background: var(--card-bg);
+      color: #fff;
     }
     
     thead {
       background: var(--primary-dark);
-      color: var(--dark);
+      color: #fff;
     }
     
     th {
@@ -427,7 +472,7 @@
     }
     
     tbody tr:hover {
-      background: rgba(255,255,255,0.05);
+      background: var(--gray-light);
     }
     
     .badge {
@@ -684,6 +729,196 @@
     .save-holidays i {
         margin-left: 5px;
     }
+
+    /* Mini Dashboard Cards */
+    .mini-dashboard-row {
+      display: flex;
+      flex-direction: row;
+      gap: var(--mini-card-gap);
+      justify-content: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      background: none;
+    }
+    .mini-stat-card {
+      width: var(--mini-card-width);
+      height: var(--mini-card-height);
+      background: var(--gray-light);
+      border-radius: var(--mini-card-radius);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 0 8px 0;
+      position: relative;
+      transition: var(--transition);
+      border: 1.5px solid #23232b;
+    }
+    .mini-stat-card .mini-card-title {
+      font-size: var(--mini-card-font-size);
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 2px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.13);
+    }
+    .mini-stat-card .mini-card-value {
+      font-size: var(--mini-card-value-size);
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 0;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    }
+    .mini-stat-card .mini-card-icon {
+      font-size: 1.5rem;
+      color: #bfc9d1;
+      margin-bottom: 2px;
+      opacity: 0.85;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.13));
+    }
+    .mini-stat-card:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: var(--shadow-md);
+      background: #23232b;
+    }
+    .top-employee-card {
+      width: 180px;
+      height: 80px;
+      background: #23232b;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-right: 18px;
+      margin-bottom: 24px;
+      border: 1.5px solid #23232b;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.13);
+    }
+    .top-employee-card .top-emp-label {
+      font-size: 0.95rem;
+      color: #bfc9d1;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .top-employee-card .top-emp-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .top-employee-card .top-emp-count {
+      font-size: 1.1rem;
+      color: #60a5fa;
+      font-weight: 700;
+    }
+    @media (max-width: 700px) {
+      .mini-dashboard-row {
+        gap: 7px;
+      }
+      .mini-stat-card {
+        width: 90px;
+        height: 65px;
+        padding: 6px 0 4px 0;
+      }
+      .mini-stat-card .mini-card-title {
+        font-size: 0.9rem;
+      }
+      .mini-stat-card .mini-card-value {
+        font-size: 1.1rem;
+      }
+      .mini-stat-card .mini-card-icon {
+        font-size: 1.1rem;
+      }
+    }
+    /* تحسين عرض الحقول في كل الموقع */
+    .form-group {
+      max-width: 340px;
+      margin: 0 auto 14px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      border-radius: 18px;
+    }
+    .form-label {
+      margin-bottom: 4px;
+      font-size: 1rem;
+      color: #bfc9d1;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+    .form-control {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      font-size: 0.98rem;
+      padding: 11px 16px;
+      margin-bottom: 0;
+      margin-top: 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.09);
+      background: #18181c;
+      color: #fff;
+      border: 1.5px solid #23232b;
+      border-radius: 18px;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+    .card-body .btn {
+      margin-top: 10px;
+      min-width: 120px;
+    }
+    .form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      justify-content: center;
+      align-items: flex-start;
+      margin-bottom: 0;
+    }
+    @media (max-width: 700px) {
+      .form-group { max-width: 98vw; }
+    }
+    /* تجميل كارد إضافة موظف */
+    #reportCard, .card.add-employee-card {
+      box-shadow: 0 4px 18px rgba(0,0,0,0.13), 0 1.5px 4px rgba(0,0,0,0.10);
+      border-radius: 18px;
+      border: 1.5px solid #23272f;
+      background: linear-gradient(135deg, #181a1f 80%, #23272f 100%);
+    }
+    .add-employee-card .card-header {
+      background: none;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .add-employee-card .card-title {
+      color: #60a5fa;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0;
+    }
+    .add-employee-card .card-body {
+      padding-top: 10px;
+    }
+
+    /* Footer */
+    .footer {
+      width: 100%;
+      background: #181818;
+      color: #b0b0b0;
+      text-align: center;
+      padding: 18px 0 10px 0;
+      font-size: 1rem;
+      letter-spacing: 0.2px;
+      border-top: 1.5px solid #232323;
+      margin-top: 40px;
+    }
   </style>
 </head>
 <body>
@@ -693,8 +928,7 @@
       <i class="fas fa-cog"></i>
       لوحة تحكم المدير
     </div>
-    
-          <div class="user-info">
+    <div class="user-info">
       <div class="user-name" id="adminName">المدير</div>
       <button class="btn btn-danger" onclick="logout()" style="margin: 0 12px;">
         <i class="fas fa-sign-out-alt"></i>
@@ -707,34 +941,43 @@
   <!-- Main Content -->
   <main>
     <!-- Dashboard Stats -->
-    <div class="dashboard-grid">
-      <div class="stat-card primary">
-        <div class="stat-card-title">إجمالي الموظفين</div>
-        <div class="stat-card-value" id="totalEmployees">0</div>
-        <div class="stat-card-icon">
-          <i class="fas fa-users"></i>
+    <div style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 0;">
+      <div class="mini-dashboard-row">
+        <div class="mini-stat-card">
+          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+          <div class="mini-card-title">A50</div>
+          <div class="mini-card-value" id="totalA50">0</div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+          <div class="mini-card-title">A920</div>
+          <div class="mini-card-value" id="totalA920">0</div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+          <div class="mini-card-title">A910s</div>
+          <div class="mini-card-value" id="totalA910s">0</div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+          <div class="mini-card-title">F310</div>
+          <div class="mini-card-value" id="totalF310">0</div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+          <div class="mini-card-title">P2</div>
+          <div class="mini-card-value" id="totalP2">0</div>
         </div>
       </div>
-      
-      <div class="stat-card success">
-        <div class="stat-card-title">إجمالي الأجهزة</div>
-        <div class="stat-card-value" id="totalDevices">0</div>
-        <div class="stat-card-icon">
-          <i class="fas fa-mobile-alt"></i>
-        </div>
-      </div>
-      
-      <div class="stat-card warning">
-        <div class="stat-card-title">الأجهزة المعطوبة</div>
-        <div class="stat-card-value" id="totalFaulty">0</div>
-        <div class="stat-card-icon">
-          <i class="fas fa-exclamation-triangle"></i>
-        </div>
+      <div class="top-employee-card" id="topEmployeeCard">
+        <div class="top-emp-label">الأكثر تسجيلاً</div>
+        <div class="top-emp-name" id="topEmpName">-</div>
+        <div class="top-emp-count" id="topEmpCount">0 جهاز</div>
       </div>
     </div>
     
     <!-- Add Employee Card -->
-    <div class="card">
+    <div class="card add-employee-card">
       <div class="card-header">
         <h2 class="card-title">
           <i class="fas fa-user-plus"></i>
@@ -747,17 +990,14 @@
             <label class="form-label">الاسم الكامل</label>
             <input type="text" id="empName" class="form-control" placeholder="أدخل الاسم الكامل" />
           </div>
-          
           <div class="form-group">
             <label class="form-label">اسم المستخدم</label>
             <input type="text" id="empId" class="form-control" placeholder="أدخل اسم المستخدم" />
           </div>
-          
           <div class="form-group">
             <label class="form-label">كلمة المرور</label>
             <input type="password" id="empPass" class="form-control" placeholder="أدخل كلمة المرور" />
           </div>
-          
           <div class="form-group">
             <label class="form-label">الدور</label>
             <select id="empRole" class="form-control">
@@ -766,7 +1006,6 @@
             </select>
           </div>
         </div>
-        
         <button class="btn btn-primary" onclick="addEmployee()">
           <i class="fas fa-plus"></i>
           <span>إضافة مستخدم</span>
@@ -785,6 +1024,9 @@
       <button class="tab-btn" onclick="showTab('submissions')">
         <i class="fas fa-clipboard-list"></i> تسجيلات الموظفين
       </button>
+      <button class="tab-btn" onclick="showTab('report')">
+        <i class="fas fa-file-alt"></i> تقرير الأجهزة
+      </button>
     </div>
     
     <!-- Tab Contents -->
@@ -795,6 +1037,9 @@
             <i class="fas fa-users"></i>
             قائمة الموظفين
           </h2>
+          <div style="margin-top: 10px;">
+            <input type="text" id="employeeSearchInput" class="form-control" placeholder="بحث بالاسم أو الايدي..." oninput="filterEmployeesTable()" style="max-width: 300px; display: inline-block;" />
+          </div>
         </div>
         <div class="card-body">
           <div class="table-container" id="employeesList">
@@ -850,6 +1095,50 @@
           <div id="employeeSubmissions" class="mt-4">
             اختر موظفًا لعرض تسجيلاته.
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="reportTab" class="tab-content">
+      <div class="card" id="reportCard">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-file-alt"></i>
+            استخراج تقرير الأجهزة حسب الفترة والنوع
+          </h2>
+        </div>
+        <div class="card-body">
+          <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;">
+            <div class="form-group">
+              <label class="form-label">من تاريخ</label>
+              <input type="date" id="reportStartDate" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">إلى تاريخ</label>
+              <input type="date" id="reportEndDate" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">نوع الجهاز</label>
+              <select id="reportDeviceType" class="form-control">
+                <option value="">الكل</option>
+                <option value="A50">A50</option>
+                <option value="A920">A920</option>
+                <option value="A910s">A910s</option>
+                <option value="F310">F310</option>
+                <option value="P2">P2</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="generateDeviceReport()">
+              <i class="fas fa-file-alt"></i>
+              عرض التقرير
+            </button>
+            <button class="btn btn-primary" onclick="exportDeviceReportToExcel()">
+              <i class="fas fa-file-excel"></i>
+              تصدير إلى Excel
+            </button>
+          </div>
+          <div id="deviceReportResults" style="margin-top: 24px;"></div>
+          <div id="deviceTypeSummary" style="margin-top: 24px;"></div>
         </div>
       </div>
     </div>
@@ -1029,7 +1318,28 @@
               '<div style="padding: 20px; color: var(--gray);">لا يوجد موظفين مسجلين في النظام.</div>';
             return;
           }
-          
+          // جمع الموظفين في مصفوفة لترتيبهم
+          let employeesArr = [];
+          snapshot.forEach(doc => {
+            try {
+              const d = doc.data();
+              if (!d.id || !d.name) return;
+              employeesArr.push(d);
+              const option = document.createElement("option");
+              option.value = d.id;
+              option.textContent = `${d.name} (${d.id})`;
+              select.appendChild(option);
+            } catch (err) {
+              console.error(`خطأ في معالجة بيانات الموظف: ${doc.id}`, err);
+            }
+          });
+          // ترتيب الموظفين حسب الايدي رقمياً
+          employeesArr.sort((a, b) => {
+            const aId = parseInt(a.id, 10);
+            const bId = parseInt(b.id, 10);
+            if (!isNaN(aId) && !isNaN(bId)) return aId - bId;
+            return a.id.localeCompare(b.id);
+          });
           let html = `<table>
             <thead>
               <tr>
@@ -1041,16 +1351,8 @@
               </tr>
             </thead>
             <tbody>`;
-            
-          snapshot.forEach(doc => {
-            try {
-              const d = doc.data();
-              if (!d.id || !d.name) {
-                console.warn(`بيانات غير مكتملة للموظف: ${doc.id}`, d);
-                return;
-              }
-              
-              html += `<tr>
+          employeesArr.forEach(d => {
+            html += `<tr>
                 <td>${d.id}</td>
                 <td>${d.name}</td>
                 <td><span class="badge badge-${d.role === 'admin' ? 'primary' : 'success'}">${d.role === "admin" ? "مدير" : "موظف"}</span></td>
@@ -1071,22 +1373,12 @@
                   </button>
                 </td>
               </tr>`;
-
-              const option = document.createElement("option");
-              option.value = d.id;
-              option.textContent = `${d.name} (${d.id})`;
-              select.appendChild(option);
-            } catch (err) {
-              console.error(`خطأ في معالجة بيانات الموظف: ${doc.id}`, err);
-            }
           });
-          
           html += `</tbody></table>`;
           document.getElementById("employeesList").innerHTML = html;
-          
           // تحميل أيام العطل لكل موظف
-          snapshot.forEach(doc => {
-              loadEmployeeHolidays(doc.data().id);
+          employeesArr.forEach(d => {
+              loadEmployeeHolidays(d.id);
           });
         })
         .catch(err => {
@@ -1102,6 +1394,24 @@
               </button>
             </div>`;
         });
+        }
+
+    // دالة فلترة الموظفين في الجدول
+    function filterEmployeesTable() {
+      const input = document.getElementById("employeeSearchInput");
+      const filter = input.value.trim().toLowerCase();
+      const table = document.querySelector("#employeesList table");
+      if (!table) return;
+      const trs = table.querySelectorAll("tbody tr");
+      trs.forEach(tr => {
+        const id = tr.children[0]?.textContent?.toLowerCase() || "";
+        const name = tr.children[1]?.textContent?.toLowerCase() || "";
+        if (id.includes(filter) || name.includes(filter)) {
+          tr.style.display = "";
+        } else {
+          tr.style.display = "none";
+        }
+      });
     }
 
     // Delete Employee Function
@@ -1341,21 +1651,38 @@
         .then(snapshot => {
           document.getElementById("totalEmployees").textContent = snapshot.size;
         });
-      
-      // Count devices and faulty devices
+      // Count devices by model and find top employee
       db.collection("device_submissions").get()
         .then(snapshot => {
-          let totalDevices = 0;
-          let totalFaulty = 0;
-          
+          let modelCounts = {A50: 0, A920: 0, A910s: 0, F310: 0, P2: 0};
+          let empCounts = {};
           snapshot.forEach(doc => {
             const data = doc.data();
-            totalDevices += data.deviceCount || 0;
-            totalFaulty += data.faultyCount || 0;
+            const type = data.deviceType && data.deviceType.trim();
+            const count = data.deviceCount || 0;
+            if (modelCounts.hasOwnProperty(type)) {
+              modelCounts[type] += count;
+            }
+            // حساب عدد الأجهزة لكل موظف
+            const emp = data.employeeName || data.employeeId || "غير معروف";
+            if (!empCounts[emp]) empCounts[emp] = 0;
+            empCounts[emp] += count;
           });
-          
-          document.getElementById("totalDevices").textContent = totalDevices;
-          document.getElementById("totalFaulty").textContent = totalFaulty;
+          document.getElementById("totalA50").textContent = modelCounts.A50;
+          document.getElementById("totalA920").textContent = modelCounts.A920;
+          document.getElementById("totalA910s").textContent = modelCounts.A910s;
+          document.getElementById("totalF310").textContent = modelCounts.F310;
+          document.getElementById("totalP2").textContent = modelCounts.P2;
+          // استخراج الموظف الأكثر تسجيلاً
+          let topEmp = "-", topCount = 0;
+          Object.keys(empCounts).forEach(emp => {
+            if (empCounts[emp] > topCount) {
+              topEmp = emp;
+              topCount = empCounts[emp];
+            }
+          });
+          document.getElementById("topEmpName").textContent = topEmp;
+          document.getElementById("topEmpCount").textContent = topCount + " جهاز";
         });
     }
 
@@ -1441,18 +1768,14 @@
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
       });
-      
       // Remove active class from all buttons
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
       });
-      
       // Show selected tab
       document.getElementById(tabId + 'Tab').classList.add('active');
-      
       // Add active class to clicked button
       event.currentTarget.classList.add('active');
-      
       // Load data if needed
       if (tabId === 'employees') {
         loadEmployees();
@@ -1537,6 +1860,110 @@
             console.error("خطأ في حفظ أيام العطل:", err);
             alert("حدث خطأ في حفظ أيام العطل");
         });
+    }
+
+    // ========== Device Report by Date and Type ==========
+    let lastDeviceReportData = [];
+    function generateDeviceReport() {
+      const startDateStr = document.getElementById("reportStartDate").value;
+      const endDateStr = document.getElementById("reportEndDate").value;
+      const deviceType = document.getElementById("reportDeviceType").value;
+      const resultsDiv = document.getElementById("deviceReportResults");
+      const summaryDiv = document.getElementById("deviceTypeSummary");
+      resultsDiv.innerHTML = "جاري التحميل...";
+      summaryDiv.innerHTML = "";
+      lastDeviceReportData = [];
+
+      if (!startDateStr || !endDateStr) {
+        resultsDiv.innerHTML = "يرجى اختيار تاريخ البداية والنهاية.";
+        return;
+      }
+      const startDate = new Date(startDateStr);
+      startDate.setHours(0,0,0,0);
+      const endDate = new Date(endDateStr);
+      endDate.setHours(23,59,59,999);
+
+      // جلب كل البيانات في الفترة ثم الفلترة حسب النوع برمجياً
+      db.collection("device_submissions")
+        .where("date", ">=", startDate)
+        .where("date", "<=", endDate)
+        .orderBy("date", "desc")
+        .get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            resultsDiv.innerHTML = "لا توجد بيانات في الفترة المحددة.";
+            summaryDiv.innerHTML = "";
+            return;
+          }
+          // دمج النتائج حسب نوع الجهاز
+          let typeSummary = {};
+          lastDeviceReportData = [];
+          let filteredDocs = [];
+          snapshot.forEach(doc => {
+            const d = doc.data();
+            if (!deviceType || (d.deviceType && d.deviceType.trim() === deviceType)) {
+              filteredDocs.push(d);
+            }
+          });
+          if (filteredDocs.length === 0) {
+            resultsDiv.innerHTML = "لا توجد بيانات في الفترة والنوع المحددين.";
+            summaryDiv.innerHTML = "";
+            return;
+          }
+          filteredDocs.forEach(d => {
+            const count = d.deviceCount || 0;
+            const type = d.deviceType || "-";
+            if (!typeSummary[type]) typeSummary[type] = 0;
+            typeSummary[type] += count;
+            // حفظ كل التفاصيل للتصدير
+            lastDeviceReportData.push({
+              date: d.date && d.date.toDate ? d.date.toDate().toLocaleString('ar-EG') : "-",
+              type,
+              count,
+              serials: d.serialNumbers || "-"
+            });
+          });
+          // عرض جدول نوع الجهاز والإجمالي فقط
+          let html = `<div class='table-container'><table id='deviceReportTable'><thead><tr>
+            <th>نوع الجهاز</th>
+            <th>إجمالي العدد</th>
+          </tr></thead><tbody>`;
+          Object.keys(typeSummary).forEach(type => {
+            html += `<tr><td>${type}</td><td>${typeSummary[type]}</td></tr>`;
+          });
+          html += `</tbody></table></div>`;
+          resultsDiv.innerHTML = html;
+          summaryDiv.innerHTML = "";
+        })
+        .catch(err => {
+          resultsDiv.innerHTML = "حدث خطأ أثناء جلب البيانات.";
+          summaryDiv.innerHTML = "";
+          console.error("Error fetching report:", err);
+        });
+    }
+
+    // ========== Export Device Report to Excel ==========
+    function exportDeviceReportToExcel() {
+      if (!lastDeviceReportData.length) {
+        alert("لا توجد بيانات لتصديرها. الرجاء عرض التقرير أولاً.");
+        return;
+      }
+      let csv = 'التاريخ,نوع الجهاز,عدد الأجهزة,أرقام السيريال\n';
+      lastDeviceReportData.forEach(row => {
+        // استبدال الفواصل في السيريال بفواصل منقوطة لتجنب مشاكل CSV
+        let serials = row.serials.replace(/,/g, ';');
+        csv += `"${row.date}","${row.type}","${row.count}","${serials}"
+`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'device_report.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   </script>
 </body>

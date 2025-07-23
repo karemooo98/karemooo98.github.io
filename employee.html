@@ -442,10 +442,13 @@
     </div>
   </header>
   <!-- إجمالي الحوافز -->
-  <div class="card" id="totalIncentiveCard" style="max-width: 350px; margin: 32px auto 24px auto; text-align: center;">
+  <div class="card" id="totalIncentiveCard" style="max-width: 400px; margin: 32px auto 24px auto; text-align: center;">
     <div style="font-size: 1.2rem; color: #b0b0b0; margin-bottom: 6px;">رصيدي الحالي</div>
     <div id="totalIncentiveValue" style="font-size: 2.2rem; font-weight: 900; color: #fff; letter-spacing: 1px;">0</div>
-    <div style="font-size: 1.1rem; color: #b0b0b0;">دينار عراقي</div>
+    <div style="font-size: 1.1rem; color: #b0b0b0; margin-bottom: 18px;">دينار عراقي</div>
+    <div id="incentiveByType" style="margin-top: 10px;">
+      <!-- تفاصيل الحوافز لكل نوع -->
+    </div>
   </div>
   
   <!-- Main Content -->
@@ -822,7 +825,7 @@
                  .replace(/'/g, "&#039;");
     }
 
-    // حساب وعرض إجمالي الحوافز للموظف
+    // حساب وعرض إجمالي الحوافز للموظف مع تفاصيل كل نوع
     function loadTotalIncentive() {
       const employeeId = localStorage.getItem("employeeId");
       if (!employeeId) return;
@@ -831,11 +834,25 @@
         .get()
         .then(snapshot => {
           let total = 0;
+          let byType = {};
           snapshot.forEach(doc => {
             const data = doc.data();
-            total += data.totalIncentive || 0;
+            const type = data.deviceType || "غير محدد";
+            const incentive = data.totalIncentive || 0;
+            total += incentive;
+            if (!byType[type]) byType[type] = 0;
+            byType[type] += incentive;
           });
           document.getElementById("totalIncentiveValue").textContent = total.toLocaleString();
+          // بناء جدول التفاصيل
+          let html = `<table style='width:100%; margin-top:10px; background:transparent; color:#fff; font-size:1.08rem;'>`;
+          html += `<thead><tr><th style='color:#b0b0b0; font-weight:500; text-align:right;'>نوع الجهاز</th><th style='color:#b0b0b0; font-weight:500;'>الحافز</th></tr></thead><tbody>`;
+          Object.keys(byType).forEach(type => {
+            html += `<tr><td style='text-align:right;'>${type}</td><td>${byType[type].toLocaleString()} د.ع</td></tr>`;
+          });
+          html += `<tr style='border-top:1.5px solid #232323;'><td style='text-align:right; font-weight:700;'>الإجمالي</td><td style='font-weight:700;'>${total.toLocaleString()} د.ع</td></tr>`;
+          html += `</tbody></table>`;
+          document.getElementById("incentiveByType").innerHTML = html;
         });
     }
 

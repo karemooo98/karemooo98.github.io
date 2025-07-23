@@ -941,39 +941,47 @@
   <!-- Main Content -->
   <main>
     <!-- Dashboard Stats -->
-    <div style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 0;">
-      <div class="mini-dashboard-row">
-        <div class="mini-stat-card">
-          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
-          <div class="mini-card-title">A50</div>
-          <div class="mini-card-value" id="totalA50">0</div>
-        </div>
-        <div class="mini-stat-card">
-          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
-          <div class="mini-card-title">A920</div>
-          <div class="mini-card-value" id="totalA920">0</div>
-        </div>
-        <div class="mini-stat-card">
-          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
-          <div class="mini-card-title">A910s</div>
-          <div class="mini-card-value" id="totalA910s">0</div>
-        </div>
-        <div class="mini-stat-card">
-          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
-          <div class="mini-card-title">F310</div>
-          <div class="mini-card-value" id="totalF310">0</div>
-        </div>
-        <div class="mini-stat-card">
-          <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
-          <div class="mini-card-title">P2</div>
-          <div class="mini-card-value" id="totalP2">0</div>
-        </div>
+    <div style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 18px; margin-bottom: 32px; margin-top: 32px;">
+      <div class="mini-stat-card" id="todayDevicesCard">
+        <div class="mini-card-icon"><i class="fas fa-calendar-day"></i></div>
+        <div class="mini-card-title">الأجهزة اليوم</div>
+        <div class="mini-card-value" id="todayDevicesValue">0</div>
       </div>
       <div class="top-employee-card" id="topEmployeeCard">
         <div class="top-emp-label">الأكثر تسجيلاً</div>
         <div class="top-emp-name" id="topEmpName">-</div>
         <div class="top-emp-count" id="topEmpCount">0 جهاز</div>
       </div>
+      <div class="mini-stat-card">
+        <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+        <div class="mini-card-title">A50</div>
+        <div class="mini-card-value" id="totalA50">0</div>
+      </div>
+      <div class="mini-stat-card">
+        <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+        <div class="mini-card-title">A920</div>
+        <div class="mini-card-value" id="totalA920">0</div>
+      </div>
+      <div class="mini-stat-card">
+        <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+        <div class="mini-card-title">A910s</div>
+        <div class="mini-card-value" id="totalA910s">0</div>
+      </div>
+      <div class="mini-stat-card">
+        <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+        <div class="mini-card-title">F310</div>
+        <div class="mini-card-value" id="totalF310">0</div>
+      </div>
+      <div class="mini-stat-card">
+        <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+        <div class="mini-card-title">P2</div>
+        <div class="mini-card-value" id="totalP2">0</div>
+      </div>
+    </div>
+    
+    <!-- رسم بياني للأجهزة المنجزة خلال آخر 7 أيام (أعمدة دائرية وأزرق متدرج) -->
+    <div style="max-width: 1000px; margin: 0 auto 38px auto; background: #181818; border-radius: 18px; padding: 28px 28px 18px 28px; box-shadow: 0 4px 18px rgba(0,0,0,0.13);">
+      <canvas id="devicesChart" height="260"></canvas>
     </div>
     
     <!-- Add Employee Card -->
@@ -1241,6 +1249,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     // Firebase Configuration
     const firebaseConfig = {
@@ -1796,6 +1805,9 @@
           }
         });
       }
+
+      loadTodayDevicesCount();
+      loadDevicesChart();
     };
 
     const NORMAL_INCENTIVE = 500;
@@ -1964,6 +1976,93 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+    }
+
+    // حساب عدد الأجهزة المجهزة اليوم
+    function loadTodayDevicesCount() {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+      db.collection("device_submissions")
+        .where("date", ">=", todayStart)
+        .where("date", "<=", todayEnd)
+        .get()
+        .then(snapshot => {
+          let total = 0;
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            total += data.deviceCount || 0;
+          });
+          document.getElementById("todayDevicesValue").textContent = total.toLocaleString();
+        });
+    }
+
+    // رسم بياني للأجهزة المنجزة خلال آخر 7 أيام (أعمدة دائرية وأزرق متدرج)
+    function loadDevicesChart() {
+      const dbDays = [];
+      const today = new Date();
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        dbDays.push({
+          label: d.toLocaleDateString('ar-EG', { weekday: 'short', day: 'numeric', month: 'short' }),
+          date: new Date(d.setHours(0,0,0,0)),
+          count: 0
+        });
+      }
+      db.collection("device_submissions").get().then(snapshot => {
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (!data.date || !data.deviceCount) return;
+          const docDate = data.date.toDate ? data.date.toDate() : new Date(data.date);
+          docDate.setHours(0,0,0,0);
+          dbDays.forEach(day => {
+            if (docDate.getTime() === day.date.getTime()) {
+              day.count += data.deviceCount;
+            }
+          });
+        });
+        const ctx = document.getElementById('devicesChart').getContext('2d');
+        // تدرج لوني للأعمدة
+        const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+        gradient.addColorStop(0, 'rgba(37,99,235,0.95)'); // أزرق قوي
+        gradient.addColorStop(0.7, 'rgba(59,130,246,0.85)');
+        gradient.addColorStop(1, 'rgba(96,165,250,0.35)'); // أزرق فاتح
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: dbDays.map(d => d.label),
+            datasets: [{
+              label: 'عدد الأجهزة',
+              data: dbDays.map(d => d.count),
+              backgroundColor: gradient,
+              borderRadius: 22,
+              maxBarThickness: 60,
+              hoverBackgroundColor: '#3b82f6',
+            }]
+          },
+          options: {
+            plugins: {
+              legend: { display: false },
+              tooltip: { backgroundColor: '#232323', titleColor: '#fff', bodyColor: '#fff' }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#b0b0b0', font: { weight: 600 } }
+              },
+              y: {
+                grid: { color: '#232323' },
+                ticks: { color: '#b0b0b0', font: { weight: 600 }, precision:0 }
+              }
+            },
+            layout: { padding: { top: 10, bottom: 0, left: 0, right: 0 } },
+            responsive: true,
+            maintainAspectRatio: false,
+          }
+        });
+      });
     }
   </script>
 </body>

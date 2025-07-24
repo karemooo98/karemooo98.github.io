@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الموظف الأكثر عملاً</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+      background: #101010;
+      color: #fff;
+      direction: rtl;
+      text-align: center;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    header {
+      background: transparent;
+      box-shadow: none;
+      padding: 32px 0 0 0;
+      margin-bottom: 0;
+    }
+    .header-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 18px;
+      border: none;
+      cursor: pointer;
+      background: #23232b;
+      color: #fff;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #3b82f6;
+      color: #fff;
+    }
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: #18181c;
+      border-radius: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      margin-bottom: 30px;
+      border: 1.5px solid #23232b;
+      color: #fff;
+    }
+    .card-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #23232b;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+    .card-body {
+      padding: 24px;
+    }
+    .details-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 18px 0;
+      font-size: 1.1rem;
+    }
+    .details-list li {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #23232b;
+    }
+    .details-list li:last-child {
+      border-bottom: none;
+    }
+    .chart-container {
+      background: #23232b;
+      border-radius: 18px;
+      padding: 28px 18px 18px 18px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+      margin-bottom: 24px;
+    }
+    .back-btn {
+      position: fixed;
+      top: 24px;
+      right: 32px;
+      z-index: 100;
+      background: #23232b;
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      box-shadow: 0 2px 12px #0002;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-btn:hover {
+      background: #60a5fa;
+      color: #fff;
+      box-shadow: 0 4px 24px #60a5fa44;
+    }
+    .top-emp-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      gap: 10px;
+      animation: fadeInUp 1s cubic-bezier(.23,1.01,.32,1);
+    }
+    .top-emp-name-hero {
+      font-size: 5.5rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 3px;
+      margin-bottom: 0;
+      animation: pulseName 1.5s cubic-bezier(.23,1.01,.32,1) infinite alternate;
+      text-shadow: 0 0 64px #fff, 0 8px 48px #60a5fa44, 0 2px 8px #ffd70044;
+      transition: font-size 0.3s;
+      line-height: 1.1;
+      word-break: break-word;
+    }
+    .top-emp-count-hero {
+      font-size: 3.2rem;
+      font-weight: 700;
+      color: #60a5fa;
+      margin-bottom: 0;
+      animation: fadeInUp 1.5s cubic-bezier(.23,1.01,.32,1);
+      text-shadow: 0 0 32px #60a5fa88, 0 2px 8px #fff2;
+      letter-spacing: 2px;
+    }
+    @keyframes popName {
+      0% { transform: scale(0.7) translateY(40px); opacity: 0; }
+      60% { transform: scale(1.15) translateY(-10px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseName {
+      0% { transform: scale(1) translateY(0); text-shadow: 0 0 64px #fff, 0 8px 48px #60a5fa44, 0 2px 8px #ffd70044; }
+      60% { transform: scale(1.08) translateY(-12px); text-shadow: 0 0 96px #fff, 0 16px 64px #60a5fa88, 0 4px 16px #ffd70088; }
+      100% { transform: scale(1.13) translateY(-18px); text-shadow: 0 0 128px #fff, 0 24px 80px #60a5fa, 0 6px 24px #ffd700; }
+    }
+    .logo-hero {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .wsl-logo {
+      width: 420px;
+      max-width: 98vw;
+      height: auto;
+      background: none !important;
+      box-shadow: none !important;
+      filter: drop-shadow(0 8px 48px #ff007a88);
+      animation: fadeInLogo 1.2s cubic-bezier(.23,1.01,.32,1);
+      border: none;
+      border-radius: 0;
+      display: block;
+      margin: 0 auto;
+    }
+    @keyframes fadeInLogo {
+      0% { opacity: 0; transform: scale(0.7) translateY(-30px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @media (max-width: 700px) {
+      .wsl-logo { width: 80vw; }
+      .top-emp-name-hero { font-size: 2.7rem; }
+      .top-emp-count-hero { font-size: 1.7rem; }
+      .back-btn { right: 10px; top: 10px; padding: 8px 18px; font-size: 1rem; }
+    }
+    .music-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 200;
+      background: #23232b;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      font-size: 2rem;
+      box-shadow: 0 2px 12px #0002;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    .music-btn:hover {
+      background: #60a5fa;
+      color: #fff;
+      box-shadow: 0 4px 24px #60a5fa44;
+    }
+    @media (max-width: 700px) {
+      .music-btn { right: 10px; bottom: 10px; width: 48px; height: 48px; font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-right"></i> رجوع</button>
+  <main>
+    <div class="logo-hero">
+      <img src="wsl-game-logo.png" alt="WSL GAME Logo" class="wsl-logo" />
+    </div>
+    <div class="top-emp-hero">
+      <div class="top-emp-name-hero" id="topEmpNameHero">جاري التحميل...</div>
+      <div class="top-emp-count-hero" id="topEmpCountHero">-- جهاز</div>
+    </div>
+  </main>
+  <button id="toggleMusicBtn" class="music-btn" title="تشغيل/إيقاف الصوت"><i class="fas fa-play"></i></button>
+  <audio id="bg-music" src="song.mp3" loop></audio>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5NdcVxl1m77m4PBGaU9PL3jqvLtfJL9I",
+      authDomain: "pos-web-3ca21.firebaseapp.com",
+      projectId: "pos-web-3ca21",
+      storageBucket: "pos-web-3ca21.firebasestorage.app",
+      messagingSenderId: "163092162625",
+      appId: "1:163092162625:web:eeef79875a66d327de3ec0",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // جلب الموظف الأكثر عملاً
+    async function getTopEmployee() {
+      const submissions = await db.collection("device_submissions").get();
+      let empCounts = {};
+      let empDetails = {};
+      submissions.forEach(doc => {
+        const data = doc.data();
+        const empId = data.employeeId;
+        const empName = data.employeeName;
+        if (!empCounts[empId]) {
+          empCounts[empId] = 0;
+          empDetails[empId] = { name: empName, id: empId };
+        }
+        empCounts[empId] += data.deviceCount || 0;
+      });
+      let topEmpId = null, topCount = 0;
+      Object.keys(empCounts).forEach(empId => {
+        if (empCounts[empId] > topCount) {
+          topEmpId = empId;
+          topCount = empCounts[empId];
+        }
+      });
+      if (!topEmpId) return null;
+      // جلب كافة تفاصيل الموظف
+      const empDoc = await db.collection("employees").doc(topEmpId).get();
+      const details = empDoc.exists ? empDoc.data() : empDetails[topEmpId];
+      return { ...details, totalDevices: topCount };
+    }
+
+    // عرض اسم وعدد الأجهزة فقط
+    async function showTopEmployeeHero() {
+      const nameDiv = document.getElementById("topEmpNameHero");
+      const countDiv = document.getElementById("topEmpCountHero");
+      const emp = await getTopEmployee();
+      if (!emp) {
+        nameDiv.textContent = 'لا يوجد بيانات موظفين.';
+        countDiv.textContent = '-- جهاز';
+        return;
+      }
+      nameDiv.textContent = emp.name || '-';
+      countDiv.textContent = emp.totalDevices + ' جهاز';
+    }
+
+    // رسم جدول بياني لدفعات الموظف
+    async function drawPaymentsChart() {
+      const emp = await getTopEmployee();
+      if (!emp) return;
+      const submissions = await db.collection("device_submissions").where("employeeId", "==", emp.id).orderBy("date").get();
+      let labels = [], data = [];
+      let payments = [];
+      submissions.forEach(doc => {
+        const d = doc.data();
+        if (!d.date || !d.totalIncentive) return;
+        const date = d.date.toDate ? d.date.toDate() : new Date(d.date);
+        labels.push(date.toLocaleDateString('ar-EG'));
+        data.push(d.totalIncentive);
+        payments.push({ date, value: d.totalIncentive });
+      });
+      // دمج الدفعات في نفس اليوم
+      let dailyTotals = {};
+      payments.forEach(p => {
+        const key = p.date.toLocaleDateString('ar-EG');
+        if (!dailyTotals[key]) dailyTotals[key] = 0;
+        dailyTotals[key] += p.value;
+      });
+      const chartLabels = Object.keys(dailyTotals);
+      const chartData = chartLabels.map(l => dailyTotals[l]);
+      const ctx = document.getElementById('paymentsChart').getContext('2d');
+      const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+      gradient.addColorStop(0, 'rgba(37,99,235,0.95)');
+      gradient.addColorStop(0.7, 'rgba(59,130,246,0.85)');
+      gradient.addColorStop(1, 'rgba(96,165,250,0.35)');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            label: 'إجمالي الدفعة (د.ع)',
+            data: chartData,
+            backgroundColor: gradient,
+            borderRadius: 18,
+            maxBarThickness: 60,
+            hoverBackgroundColor: '#3b82f6',
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { display: false },
+            tooltip: { backgroundColor: '#232323', titleColor: '#fff', bodyColor: '#fff' }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#b0b0b0', font: { weight: 600 } }
+            },
+            y: {
+              grid: { color: '#232323' },
+              ticks: { color: '#b0b0b0', font: { weight: 600 }, precision:0 }
+            }
+          },
+          layout: { padding: { top: 10, bottom: 0, left: 0, right: 0 } },
+          responsive: true,
+          maintainAspectRatio: false,
+        }
+      });
+    }
+
+    // Initialize
+    window.onload = function() {
+      showTopEmployeeHero();
+    };
+  </script>
+  <script>
+    const music = document.getElementById('bg-music');
+    const btn = document.getElementById('toggleMusicBtn');
+    let isPlaying = false;
+    btn.onclick = function() {
+      if (music.paused) {
+        music.play();
+      } else {
+        music.pause();
+      }
+    };
+    music.onplay = function() {
+      isPlaying = true;
+      btn.innerHTML = '<i class="fas fa-pause"></i>';
+    };
+    music.onpause = function() {
+      isPlaying = false;
+      btn.innerHTML = '<i class="fas fa-play"></i>';
+    };
+  </script>
+</body>
+</html> 

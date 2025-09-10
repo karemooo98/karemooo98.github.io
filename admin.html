@@ -977,6 +977,11 @@
         <div class="mini-card-title">P2</div>
         <div class="mini-card-value" id="totalP2">0</div>
       </div>
+      <div class="mini-stat-card">
+        <div class="mini-card-icon"><i class="fas fa-mobile-alt"></i></div>
+        <div class="mini-card-title">P2 SE</div>
+        <div class="mini-card-value" id="totalP2SE">0</div>
+      </div>
     </div>
     
     <!-- رسم بياني للأجهزة المنجزة خلال آخر 7 أيام (أعمدة دائرية وأزرق متدرج) -->
@@ -1134,6 +1139,7 @@
                 <option value="A910s">A910s</option>
                 <option value="F310">F310</option>
                 <option value="P2">P2</option>
+                <option value="P2 SE">P2 SE</option>
               </select>
             </div>
             <button class="btn btn-primary" onclick="generateDeviceReport()">
@@ -1189,6 +1195,7 @@
               <option value="A910s">A910s</option>
               <option value="F310">F310</option>
               <option value="P2">P2</option>
+              <option value="P2 SE">P2 SE</option>
             </select>
           </div>
           
@@ -1663,7 +1670,7 @@
       // Count devices by model and find top employee
       db.collection("device_submissions").get()
         .then(snapshot => {
-          let modelCounts = {A50: 0, A920: 0, A910s: 0, F310: 0, P2: 0};
+          let modelCounts = {A50: 0, A920: 0, A910s: 0, F310: 0, P2: 0, "P2 SE": 0};
           let empCounts = {};
           snapshot.forEach(doc => {
             const data = doc.data();
@@ -1682,6 +1689,7 @@
           document.getElementById("totalA910s").textContent = modelCounts.A910s;
           document.getElementById("totalF310").textContent = modelCounts.F310;
           document.getElementById("totalP2").textContent = modelCounts.P2;
+          document.getElementById("totalP2SE").textContent = modelCounts["P2 SE"];
           // استخراج الموظف الأكثر تسجيلاً
           let topEmp = "-", topCount = 0;
           Object.keys(empCounts).forEach(emp => {

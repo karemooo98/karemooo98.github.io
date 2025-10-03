@@ -477,7 +477,13 @@
         
         <div class="form-group">
           <label class="form-label">أرقام السيريال (سطر واحد لكل جهاز)</label>
-          <textarea id="serialNumbers" class="form-control" rows="4"></textarea>
+          <div style="position: relative;">
+            <textarea id="serialNumbers" class="form-control" rows="4"></textarea>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="checkDuplicatesInForm()" style="position: absolute; top: 8px; left: 8px; z-index: 10;">
+              <i class="fas fa-search"></i>
+              فحص المكررات
+            </button>
+          </div>
         </div>
         
         <div class="form-group">
@@ -532,6 +538,40 @@
     </div>
   </div>
 
+  <!-- Duplicate Serial Numbers Modal -->
+  <div class="modal" id="duplicateModal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+          أرقام سيريال مكررة
+        </h3>
+        <button class="modal-close" onclick="closeDuplicateModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: #f59e0b; margin-bottom: 16px;">
+          تم اكتشاف أرقام سيريال مكررة. يرجى مراجعة القائمة أدناه وإزالة المكررات:
+        </p>
+        <div id="duplicateList" style="max-height: 300px; overflow-y: auto; background: #232323; border-radius: 8px; padding: 12px;">
+          <!-- Duplicate serials will be displayed here -->
+        </div>
+        <div style="margin-top: 16px; padding: 12px; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);">
+          <p style="margin: 0; color: #f59e0b; font-size: 0.9rem;">
+            <i class="fas fa-info-circle"></i>
+            يمكنك إزالة الأرقام المكررة من القائمة أو تعديلها في النموذج
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDuplicateModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="removeDuplicates()">
+          <i class="fas fa-check"></i>
+          إزالة المكررات
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script>
@@ -557,6 +597,10 @@
 
     const NORMAL_INCENTIVE = 500;
     const HOLIDAY_INCENTIVE = 750;
+
+    // Variables for duplicate detection
+    let duplicateSerials = [];
+    let originalSerialNumbers = "";
 
     function updateIncentiveCalculation() {
       const deviceCount = parseInt(document.getElementById("deviceCount").value) || 0;
@@ -593,6 +637,167 @@
         });
     }
 
+    // Check for duplicate serial numbers
+    function checkForDuplicates(serialNumbersArray) {
+      const duplicates = [];
+      const seen = new Set();
+      
+      serialNumbersArray.forEach((serial, index) => {
+        if (seen.has(serial)) {
+          duplicates.push({
+            serial: serial,
+            positions: [serialNumbersArray.indexOf(serial), index]
+          });
+        } else {
+          seen.add(serial);
+        }
+      });
+      
+      return duplicates;
+    }
+
+    // Show duplicate modal
+    function showDuplicateModal(duplicates) {
+      const duplicateList = document.getElementById("duplicateList");
+      let html = `
+        <div style="color: #f59e0b; margin-bottom: 16px; padding: 12px; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);">
+          <strong><i class="fas fa-exclamation-triangle"></i> تم اكتشاف ${duplicates.length} رقم سيريال مكرر:</strong>
+        </div>
+      `;
+      
+      duplicates.forEach((dup, index) => {
+        html += `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin-bottom: 8px; background: #181818; border-radius: 6px; border: 1px solid #f59e0b;">
+            <div>
+              <strong style="color: #f59e0b;">${dup.serial}</strong>
+              <span style="color: #b0b0b0; font-size: 0.9rem; margin-right: 8px;">(موقف ${dup.positions.join(', ')})</span>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="removeDuplicateFromList(${index})">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+      });
+      
+      duplicateList.innerHTML = html;
+      document.getElementById("duplicateModal").classList.add("active");
+    }
+
+    // Remove duplicate from list
+    function removeDuplicateFromList(index) {
+      duplicateSerials.splice(index, 1);
+      showDuplicateModal(duplicateSerials);
+    }
+
+    // Remove duplicates and update form
+    function removeDuplicates() {
+      const serialNumbersRaw = document.getElementById("serialNumbers").value.trim();
+      const serialNumbersArray = serialNumbersRaw
+        .split(/\r?\n/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+      
+      // Remove duplicates
+      const uniqueSerials = [...new Set(serialNumbersArray)];
+      
+      // Update form
+      document.getElementById("serialNumbers").value = uniqueSerials.join('\n');
+      document.getElementById("deviceCount").value = uniqueSerials.length;
+      
+      // Clear visual highlights
+      clearTextareaHighlights();
+      
+      // Update incentive calculation
+      updateIncentiveCalculation();
+      
+      // Close modal
+      closeDuplicateModal();
+      
+      alert(`تم إزالة ${serialNumbersArray.length - uniqueSerials.length} رقم سيريال مكرر.`);
+    }
+
+    // Close duplicate modal
+    function closeDuplicateModal() {
+      document.getElementById("duplicateModal").classList.remove("active");
+      duplicateSerials = [];
+    }
+
+    // Check duplicates in form
+    function checkDuplicatesInForm() {
+      const serialNumbersRaw = document.getElementById("serialNumbers").value.trim();
+      if (!serialNumbersRaw) {
+        alert("يرجى إدخال أرقام السيريال أولاً.");
+        return;
+      }
+      
+      const serialNumbersArray = serialNumbersRaw
+        .split(/\r?\n/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+      
+      if (serialNumbersArray.length === 0) {
+        alert("يرجى إدخال أرقام السيريال أولاً.");
+        return;
+      }
+      
+      // Check for duplicates in current input
+      const currentDuplicates = checkForDuplicates(serialNumbersArray);
+      if (currentDuplicates.length > 0) {
+        duplicateSerials = currentDuplicates;
+        showDuplicateModal(duplicateSerials);
+        // Add visual indicator
+        highlightDuplicatesInTextarea(currentDuplicates);
+      } else {
+        alert("لا توجد أرقام سيريال مكررة في النموذج الحالي.");
+        // Remove any existing highlights
+        clearTextareaHighlights();
+      }
+    }
+
+    // Highlight duplicates in textarea
+    function highlightDuplicatesInTextarea(duplicates) {
+      const textarea = document.getElementById("serialNumbers");
+      const duplicateSerials = duplicates.map(dup => dup.serial);
+      
+      // Add visual feedback by changing border color
+      textarea.style.borderColor = "#f59e0b";
+      textarea.style.boxShadow = "0 0 0 3px rgba(245, 158, 11, 0.2)";
+      
+      // Show warning message
+      const warningDiv = document.createElement("div");
+      warningDiv.id = "duplicateWarning";
+      warningDiv.style.cssText = `
+        color: #f59e0b;
+        font-size: 0.9rem;
+        margin-top: 8px;
+        padding: 8px;
+        background: rgba(245, 158, 11, 0.1);
+        border-radius: 6px;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      `;
+      warningDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> تم اكتشاف ${duplicates.length} رقم سيريال مكرر`;
+      
+      // Remove existing warning if any
+      const existingWarning = document.getElementById("duplicateWarning");
+      if (existingWarning) {
+        existingWarning.remove();
+      }
+      
+      textarea.parentNode.appendChild(warningDiv);
+    }
+
+    // Clear textarea highlights
+    function clearTextareaHighlights() {
+      const textarea = document.getElementById("serialNumbers");
+      textarea.style.borderColor = "#232323";
+      textarea.style.boxShadow = "0 1px 4px rgba(0,0,0,0.09)";
+      
+      const existingWarning = document.getElementById("duplicateWarning");
+      if (existingWarning) {
+        existingWarning.remove();
+      }
+    }
+
     function submitDevices() {
       const deviceType = document.getElementById("deviceType").value;
       const deviceCount = parseInt(document.getElementById("deviceCount").value) || 0;
@@ -614,15 +819,19 @@
         return;
       }
       
-      const uniqueSerials = new Set(serialNumbersArray);
-      if (uniqueSerials.size !== serialNumbersArray.length) {
-        alert("تم اكتشاف أرقام سيريال مكررة.");
+      // Check for duplicates in current input
+      const currentDuplicates = checkForDuplicates(serialNumbersArray);
+      if (currentDuplicates.length > 0) {
+        duplicateSerials = currentDuplicates;
+        showDuplicateModal(duplicateSerials);
         return;
       }
 
       // تحقق من وجود السيريالات مسبقاً في قاعدة البيانات
       db.collection("device_submissions").get().then(snapshot => {
         let allSerials = [];
+        let existingDuplicates = [];
+        
         snapshot.forEach(doc => {
           const data = doc.data();
           if (data.serialNumbers) {
@@ -631,10 +840,35 @@
             allSerials = allSerials.concat(serials);
           }
         });
+        
         // تحقق إذا كان أي سيريال مدخل موجود مسبقاً
-        const duplicate = serialNumbersArray.find(s => allSerials.includes(s));
-        if (duplicate) {
-          alert(`رقم السيريال (${duplicate}) موجود مسبقاً في النظام. يرجى التأكد من الأرقام المدخلة.`);
+        serialNumbersArray.forEach(serial => {
+          if (allSerials.includes(serial)) {
+            existingDuplicates.push(serial);
+          }
+        });
+        
+        if (existingDuplicates.length > 0) {
+          const duplicateList = document.getElementById("duplicateList");
+          let html = `
+            <div style="color: #ef4444; margin-bottom: 16px; padding: 12px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+              <strong><i class="fas fa-exclamation-circle"></i> أرقام سيريال موجودة مسبقاً في النظام:</strong>
+            </div>
+          `;
+          
+          existingDuplicates.forEach(serial => {
+            html += `
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin-bottom: 8px; background: #181818; border-radius: 6px; border: 1px solid #ef4444;">
+                <div>
+                  <strong style="color: #ef4444;">${serial}</strong>
+                  <span style="color: #b0b0b0; font-size: 0.9rem; margin-right: 8px;">(موجود مسبقاً)</span>
+                </div>
+              </div>
+            `;
+          });
+          
+          duplicateList.innerHTML = html;
+          document.getElementById("duplicateModal").classList.add("active");
           return;
         }
 
@@ -859,6 +1093,11 @@
         if (e.key === "Enter" && e.ctrlKey) {
           submitDevices();
         }
+      });
+      
+      // Clear duplicate warnings when user types in serial numbers
+      document.getElementById("serialNumbers").addEventListener("input", function() {
+        clearTextareaHighlights();
       });
     };
   </script>
